@@ -47,7 +47,13 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
     }, [targetDate]);
 
     if (!isMounted) {
-        return null;
+        return (
+            <div className="flex justify-center gap-3 md:gap-4">
+                {[0, 1, 2, 3].map((i) => (
+                    <div key={i} className="w-20 md:w-24 h-24 md:h-28 bg-[#18181b] rounded-xl border border-white/5 animate-pulse" />
+                ))}
+            </div>
+        );
     }
 
     const timeUnits = [
@@ -58,18 +64,23 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
     ];
 
     return (
-        <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-            {timeUnits.map((unit) => (
-                <div
-                    key={unit.label}
-                    className="glass rounded-2xl p-4 md:p-6 min-w-[80px] md:min-w-[100px] text-center animate-pulse-glow"
-                >
-                    <div className="text-3xl md:text-5xl font-bold text-gradient mb-1">
-                        {String(unit.value).padStart(2, "0")}
+        <div className="flex justify-center gap-3 md:gap-4">
+            {timeUnits.map((unit, index) => (
+                <div key={unit.label} className="relative">
+                    <div className="w-20 md:w-24 bg-[#18181b] rounded-xl border border-white/5 p-4 md:p-5">
+                        <div className="text-3xl md:text-4xl font-bold text-white text-center tabular-nums">
+                            {String(unit.value).padStart(2, "0")}
+                        </div>
+                        <div className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-wider text-center mt-1">
+                            {unit.label}
+                        </div>
                     </div>
-                    <div className="text-xs md:text-sm text-gray-400 uppercase tracking-wider">
-                        {unit.label}
-                    </div>
+                    {index < timeUnits.length - 1 && (
+                        <div className="absolute -right-2 md:-right-2.5 top-1/2 -translate-y-1/2 flex flex-col gap-1.5">
+                            <div className="w-1 h-1 bg-zinc-600 rounded-full" />
+                            <div className="w-1 h-1 bg-zinc-600 rounded-full" />
+                        </div>
+                    )}
                 </div>
             ))}
         </div>
