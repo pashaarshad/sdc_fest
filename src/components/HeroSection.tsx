@@ -1,112 +1,131 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles, MapPin, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
 import CountdownTimer from "./CountdownTimer";
 
 export default function HeroSection() {
-    // Event date: 17th February 2026, 8:30 AM IST
-    const festDate = new Date("2026-02-17T08:30:00+05:30");
-
     return (
-        <section className="relative min-h-screen flex items-center justify-center grid-bg overflow-hidden">
-            {/* Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0c] via-transparent to-[#0a0a0c]" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#d4a843]/5 rounded-full blur-[120px]" />
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+            {/* Background Effects */}
+            <div className="absolute inset-0">
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(212,168,67,0.12),transparent)]" />
 
-            {/* Content */}
-            <div className="relative z-10 container-main text-center pt-24 pb-16">
-                {/* Badge */}
-                <div className="inline-flex items-center gap-2 bg-[#d4a843]/10 border border-[#d4a843]/30 rounded-full px-5 py-2 mb-10 animate-fade-in">
-                    <svg className="w-4 h-4 text-[#d4a843]" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                    </svg>
-                    <span className="text-[13px] text-[#d4a843] font-medium">SDC Mysuru Annual Fest</span>
-                </div>
-
-                {/* Main Title */}
-                <h1 className="font-[family-name:var(--font-playfair)] text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight mb-8 animate-slide-up">
-                    <span className="text-white">SHRESHTA</span>
-                    <span className="text-gold-gradient ml-4">2026</span>
-                </h1>
-
-                {/* Description - Single Centered Line */}
-                <p
-                    className="text-lg md:text-xl text-zinc-400 max-w-3xl mx-auto mb-10 animate-slide-up text-center"
-                    style={{ animationDelay: "0.1s" }}
-                >
-                    Experience the grandest intercollegiate fest featuring competitions in
-                    <br className="md:hidden" />
-                    <span className="text-white font-medium"> IT, Management, Cultural & Sports</span> events.
-                </p>
-
-                {/* Info Pills - Date, Time, Venue */}
+                {/* Grid pattern */}
                 <div
-                    className="flex flex-wrap items-center justify-center gap-3 mb-12 animate-slide-up"
-                    style={{ animationDelay: "0.15s" }}
-                >
-                    <div className="flex items-center gap-2 bg-[#1a1a1f] border border-[#d4a843]/30 rounded-full px-4 py-2.5">
-                        <svg className="w-4 h-4 text-[#d4a843]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span className="text-sm text-white">February 17, 2026, Tuesday</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-[#1a1a1f] border border-white/10 rounded-full px-4 py-2.5">
-                        <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span className="text-sm text-zinc-300">8:30 AM onwards</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-[#1a1a1f] border border-white/10 rounded-full px-4 py-2.5">
-                        <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span className="text-sm text-zinc-300">Seshadripuram Degree College, Mysuru</span>
-                    </div>
-                </div>
+                    className="absolute inset-0 opacity-[0.02]"
+                    style={{
+                        backgroundImage: `linear-gradient(white 1px, transparent 1px),
+                             linear-gradient(90deg, white 1px, transparent 1px)`,
+                        backgroundSize: '60px 60px'
+                    }}
+                />
 
-                {/* Countdown Timer */}
-                <div className="mb-10 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-                    <CountdownTimer targetDate={festDate} />
-                </div>
+                {/* Floating orbs */}
+                <motion.div
+                    animate={{
+                        y: [0, -30, 0],
+                        x: [0, 15, 0],
+                    }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#d4a843]/5 blur-3xl"
+                />
+                <motion.div
+                    animate={{
+                        y: [0, 20, 0],
+                        x: [0, -20, 0],
+                    }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-[#d4a843]/8 blur-3xl"
+                />
+            </div>
 
-                {/* CTA Buttons */}
-                <div
-                    className="flex flex-wrap items-center justify-center gap-4 mb-16 animate-slide-up"
-                    style={{ animationDelay: "0.25s" }}
-                >
-                    <Link href="#events" className="btn btn-primary px-8 py-3.5 text-[15px]">
-                        Explore Events
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                    </Link>
-                    <Link href="#register" className="btn btn-secondary px-8 py-3.5 text-[15px]">
-                        Register Now
-                    </Link>
-                </div>
+            <div className="container-main relative z-10 pt-24 pb-16">
+                <div className="max-w-5xl mx-auto text-center">
+                    {/* College Badge */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#d4a843]/10 border border-[#d4a843]/20 mb-6"
+                    >
+                        <Sparkles className="w-4 h-4 text-[#d4a843]" />
+                        <span className="text-sm font-medium text-[#d4a843]">SDC Mysuru Annual Fest</span>
+                    </motion.div>
 
-                {/* Stats */}
-                <div
-                    className="flex flex-wrap items-center justify-center gap-6 md:gap-10 animate-slide-up"
-                    style={{ animationDelay: "0.3s" }}
-                >
-                    {[
-                        { value: "13+", label: "Events" },
-                        { value: "4", label: "Categories" },
-                        { value: "1000+", label: "Expected Participants" },
-                        { value: "₹50K+", label: "Prize Pool" },
-                    ].map((stat) => (
-                        <div
-                            key={stat.label}
-                            className="text-center px-6 py-4 bg-[#14141a] border border-[#d4a843]/20 rounded-2xl min-w-[120px]"
-                        >
-                            <div className="text-2xl md:text-3xl font-bold text-gold-gradient mb-1">{stat.value}</div>
-                            <div className="text-xs text-zinc-500">{stat.label}</div>
+                    {/* Main Heading - SHRESHTA 2026 */}
+                    <motion.h1
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, delay: 0.1 }}
+                        className="font-[family-name:var(--font-playfair)] text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6"
+                    >
+                        <span className="text-white">SHRESHTA</span>
+                        <span className="text-gold-gradient ml-4">2026</span>
+                    </motion.h1>
+
+                    {/* Subtitle */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed text-center"
+                    >
+                        Experience the grandest intercollegiate fest featuring competitions in{" "}
+                        <span className="text-white font-medium"> IT, Management, Cultural & Sports</span> events.
+                    </motion.p>
+
+                    {/* Event Info Pills */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-12"
+                    >
+                        <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#18181c] border border-[#d4a843]/30">
+                            <Calendar className="w-4 h-4 text-[#d4a843]" />
+                            <span className="text-sm text-white">February 17, 2026, Tuesday</span>
                         </div>
-                    ))}
+                        <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#18181c] border border-white/10">
+                            <Clock className="w-4 h-4 text-zinc-400" />
+                            <span className="text-sm text-zinc-300">8:30 AM onwards</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#18181c] border border-white/10">
+                            <MapPin className="w-4 h-4 text-zinc-400" />
+                            <span className="text-sm text-zinc-300">Seshadripuram Degree College, Mysuru</span>
+                        </div>
+                    </motion.div>
+
+                    {/* Countdown Timer */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="flex justify-center mb-10"
+                    >
+                        <CountdownTimer />
+                    </motion.div>
+
+                    {/* CTA Buttons */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.5 }}
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                    >
+                        <Link href="#events" className="btn btn-primary flex items-center gap-2 group px-8 py-3.5">
+                            Explore Events
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                        <Link href="#register" className="btn btn-secondary flex items-center gap-2 px-8 py-3.5">
+                            Register Now
+                        </Link>
+                    </motion.div>
                 </div>
             </div>
+
         </section>
     );
 }
