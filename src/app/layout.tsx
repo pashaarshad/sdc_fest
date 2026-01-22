@@ -7,12 +7,12 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SDC Fest 2026 | Shesha College Mysore",
-  description: "Welcome to SDC Fest 2026 - The biggest inter-college fest at Shesha College Mysore. Join us for exciting events in IT, Management, Cultural, and Sports!",
-  keywords: "SDC Fest, Shesha College, Mysore, College Fest, Hackathon, Cultural, Sports, Inter-college",
+  title: "SHRESHTA 2026 | Seshadripuram Degree College, Mysuru",
+  description: "SHRESHTA 2026 - The Inter-College Fest at Seshadripuram Degree College, Mysuru. Join us on 17th February 2026 for exciting events in IT, Management, Cultural, and Sports!",
+  keywords: "SHRESHTA, Seshadripuram Degree College, SDC, Mysuru, College Fest, Inter-college, IT Events, Cultural Events, Sports",
   openGraph: {
-    title: "SDC Fest 2026 | Shesha College Mysore",
-    description: "The biggest inter-college fest at Shesha College Mysore",
+    title: "SHRESHTA 2026 | Seshadripuram Degree College, Mysuru",
+    description: "The Inter-College Fest at SDC Mysuru - 17th February 2026",
     type: "website",
   },
 };
