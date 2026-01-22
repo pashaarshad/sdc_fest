@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-import Image from "next/image";
+
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -34,15 +34,8 @@ export default function Navbar() {
             <nav className="container-main">
                 <div className="flex items-center justify-between h-16 lg:h-20">
                     {/* Logo */}
+                    {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="relative w-10 h-10">
-                            <Image
-                                src="/main_logo.png"
-                                alt="SHRESHTA 2026 Logo"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
                         <div className="flex items-baseline gap-1">
                             <span className="text-white font-semibold text-lg">SHRESHTA</span>
                             <span className="text-[#d4a843] text-sm font-medium">&apos;26</span>

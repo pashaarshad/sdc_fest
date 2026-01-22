@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, MapPin, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
+
 import CountdownTimer from "./CountdownTimer";
 
 export default function HeroSection() {
@@ -45,15 +46,18 @@ export default function HeroSection() {
             <div className="container-main relative z-10 pt-24 pb-16">
                 <div className="max-w-5xl mx-auto text-center">
                     {/* College Badge */}
+                    {/* College Badge */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#d4a843]/10 border border-[#d4a843]/20 mb-6"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#d4a843]/10 border border-[#d4a843]/20 mb-8"
                     >
                         <Sparkles className="w-4 h-4 text-[#d4a843]" />
                         <span className="text-sm font-medium text-[#d4a843]">SDC Mysuru Annual Fest</span>
                     </motion.div>
+
+
 
                     {/* Main Heading - SHRESHTA 2026 */}
                     <motion.h1
