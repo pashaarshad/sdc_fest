@@ -50,7 +50,10 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
         return (
             <div className="flex justify-center gap-3 md:gap-4">
                 {[0, 1, 2, 3].map((i) => (
-                    <div key={i} className="w-20 md:w-24 h-24 md:h-28 bg-[#18181b] rounded-xl border border-white/5 animate-pulse" />
+                    <div
+                        key={i}
+                        className="w-[72px] md:w-[88px] h-[88px] md:h-[100px] bg-[#16161a] rounded-2xl border border-white/[0.04]"
+                    />
                 ))}
             </div>
         );
@@ -59,26 +62,26 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
     const timeUnits = [
         { label: "Days", value: timeLeft.days },
         { label: "Hours", value: timeLeft.hours },
-        { label: "Minutes", value: timeLeft.minutes },
-        { label: "Seconds", value: timeLeft.seconds },
+        { label: "Min", value: timeLeft.minutes },
+        { label: "Sec", value: timeLeft.seconds },
     ];
 
     return (
         <div className="flex justify-center gap-3 md:gap-4">
             {timeUnits.map((unit, index) => (
                 <div key={unit.label} className="relative">
-                    <div className="w-20 md:w-24 bg-[#18181b] rounded-xl border border-white/5 p-4 md:p-5">
-                        <div className="text-3xl md:text-4xl font-bold text-white text-center tabular-nums">
+                    <div className="w-[72px] md:w-[88px] bg-[#16161a] rounded-2xl border border-white/[0.04] p-4 md:p-5 hover:border-white/[0.08] transition-colors">
+                        <div className="text-2xl md:text-4xl font-bold text-white text-center tabular-nums tracking-tight">
                             {String(unit.value).padStart(2, "0")}
                         </div>
-                        <div className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-wider text-center mt-1">
+                        <div className="text-[10px] md:text-[11px] text-zinc-500 uppercase tracking-wider text-center mt-1 font-medium">
                             {unit.label}
                         </div>
                     </div>
                     {index < timeUnits.length - 1 && (
-                        <div className="absolute -right-2 md:-right-2.5 top-1/2 -translate-y-1/2 flex flex-col gap-1.5">
-                            <div className="w-1 h-1 bg-zinc-600 rounded-full" />
-                            <div className="w-1 h-1 bg-zinc-600 rounded-full" />
+                        <div className="absolute -right-2 md:-right-2.5 top-1/2 -translate-y-[60%] flex flex-col gap-1.5">
+                            <div className="w-1 h-1 bg-zinc-700 rounded-full" />
+                            <div className="w-1 h-1 bg-zinc-700 rounded-full" />
                         </div>
                     )}
                 </div>
