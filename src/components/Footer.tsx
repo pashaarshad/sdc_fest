@@ -84,23 +84,7 @@ export default function Footer() {
                     <p className="text-xs text-zinc-600">
                         © {currentYear} SHRESHTA • Seshadripuram Degree College, Mysuru
                     </p>
-                    <div className="flex items-center gap-4">
-                        <a
-                            href={collegeInfo.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-zinc-500 hover:text-[#d4a843] transition-colors"
-                        >
-                            Visit Website
-                        </a>
-                        <span className="text-zinc-700">|</span>
-                        <a
-                            href={`tel:${collegeInfo.phone.replace(/\s/g, '')}`}
-                            className="text-xs text-zinc-500 hover:text-[#d4a843] transition-colors"
-                        >
-                            {collegeInfo.phone}
-                        </a>
-                    </div>
+
                 </div>
 
                 {/* Designer Credit */}
