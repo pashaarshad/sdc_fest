@@ -4,16 +4,16 @@ import Link from "next/link";
 import CountdownTimer from "./CountdownTimer";
 
 export default function HeroSection() {
-    // Event date: February 18th, 2026 at 9:00 AM IST
-    const festDate = new Date("2026-02-18T09:00:00+05:30");
+    // Event date: 17th February 2026, 8:30 AM IST
+    const festDate = new Date("2026-02-17T08:30:00+05:30");
 
     return (
         <section className="relative min-h-screen flex items-center justify-center bg-[#09090b] overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0">
                 {/* Gradient Orbs */}
-                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[120px]" />
-                <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-600/8 rounded-full blur-[100px]" />
+                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px]" />
+                <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-red-600/8 rounded-full blur-[100px]" />
 
                 {/* Grid Pattern */}
                 <div
@@ -36,20 +36,28 @@ export default function HeroSection() {
                     </span>
                     <span className="text-[13px] text-zinc-300 font-medium">Registration Open</span>
                     <span className="w-px h-4 bg-white/10" />
-                    <span className="text-[13px] text-zinc-500">February 18, 2026</span>
+                    <span className="text-[13px] text-zinc-500">17th February 2026</span>
                 </div>
 
                 {/* Main Heading */}
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-4 animate-slide-up">
-                    SDC Fest 2026
+                    <span className="bg-gradient-to-r from-orange-400 via-red-500 to-orange-500 bg-clip-text text-transparent">SHRESHTA</span> 2026
                 </h1>
 
                 {/* College Name */}
                 <p
-                    className="text-lg md:text-xl text-zinc-400 font-medium mb-4 animate-slide-up"
+                    className="text-lg md:text-xl text-zinc-400 font-medium mb-2 animate-slide-up"
                     style={{ animationDelay: "0.05s" }}
                 >
-                    Shesha College Mysore
+                    Seshadripuram Degree College, Mysuru
+                </p>
+
+                {/* Trust Name */}
+                <p
+                    className="text-[13px] text-zinc-600 mb-6 animate-slide-up"
+                    style={{ animationDelay: "0.08s" }}
+                >
+                    Seshadripuram Educational Trust
                 </p>
 
                 {/* Description */}
@@ -57,8 +65,8 @@ export default function HeroSection() {
                     className="text-[15px] text-zinc-500 max-w-xl mx-auto mb-12 leading-relaxed animate-slide-up"
                     style={{ animationDelay: "0.1s" }}
                 >
-                    The biggest inter-college fest bringing together students from across the region
-                    for competitions in IT, Management, Cultural, and Sports.
+                    The Inter-College Fest bringing together students from across the region
+                    for exciting competitions in IT, Management, Cultural, and Sports events.
                 </p>
 
                 {/* Countdown Timer */}
@@ -92,10 +100,10 @@ export default function HeroSection() {
                     style={{ animationDelay: "0.25s" }}
                 >
                     {[
-                        { value: "12+", label: "Events" },
+                        { value: "15+", label: "Events" },
                         { value: "50+", label: "Colleges" },
-                        { value: "5000+", label: "Participants" },
-                        { value: "₹5L+", label: "Prize Pool" },
+                        { value: "1000+", label: "Participants" },
+                        { value: "₹50K+", label: "Prize Pool" },
                     ].map((stat) => (
                         <div
                             key={stat.label}
@@ -105,6 +113,17 @@ export default function HeroSection() {
                             <div className="text-[13px] text-zinc-500">{stat.label}</div>
                         </div>
                     ))}
+                </div>
+
+                {/* Important Notice */}
+                <div
+                    className="mt-12 inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-xl px-4 py-2.5 animate-slide-up"
+                    style={{ animationDelay: "0.3s" }}
+                >
+                    <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-[13px] text-orange-300">Register on or before <strong>15th February 2026</strong></span>
                 </div>
             </div>
 

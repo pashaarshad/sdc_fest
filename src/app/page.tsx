@@ -1,6 +1,6 @@
 import HeroSection from "@/components/HeroSection";
 import EventCard from "@/components/EventCard";
-import { itEvents, managementEvents, culturalEvents, sportsEvents, Event } from "@/data/events";
+import { itEvents, managementEvents, culturalEvents, sportsEvents, Event, collegeInfo, facultyCoordinators, studentCouncil } from "@/data/events";
 import Link from "next/link";
 
 // Category configuration
@@ -8,7 +8,7 @@ const categories = [
   {
     id: "it-events",
     title: "IT Events",
-    subtitle: "Showcase your technical skills in gaming, coding, design, and problem-solving.",
+    subtitle: "Showcase your technical skills in gaming, coding, and design competitions.",
     events: itEvents,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@ const categories = [
   {
     id: "cultural-events",
     title: "Cultural Events",
-    subtitle: "Express your creativity through music, dance, and fashion.",
+    subtitle: "Express your creativity through music, dance, and art.",
     events: culturalEvents,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,35 +157,37 @@ export default function Home() {
         />
       ))}
 
-      {/* Schedule Section */}
+      {/* Schedule & Guidelines Section */}
       <section id="schedule" className="section bg-[#0c0c0e]">
         <div className="container-main">
           <div className="section-header text-center">
-            <h2 className="section-title">Event Schedule</h2>
+            <h2 className="section-title">Event Day Schedule</h2>
             <p className="section-subtitle mx-auto">
-              Two days of exciting competitions and unforgettable moments.
+              All events on 17th February 2026 (Tuesday) • Reporting Time: 8:30 AM
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
-            {/* Day 1 */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Schedule */}
             <div className="card-static p-6">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                  <span className="text-violet-400 font-bold text-lg">18</span>
+                <div className="w-14 h-14 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                  <span className="text-orange-400 font-bold text-lg">17</span>
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold text-[15px]">Day 1</h3>
-                  <p className="text-[13px] text-zinc-500">February 18, 2026 • Tuesday</p>
+                  <h3 className="text-white font-semibold text-[15px]">Event Day</h3>
+                  <p className="text-[13px] text-zinc-500">February 17, 2026 • Tuesday</p>
                 </div>
               </div>
               <div className="space-y-4">
                 {[
-                  { time: "09:00 AM", event: "Inauguration Ceremony", location: "Main Stage" },
-                  { time: "10:00 AM", event: "IT & Management Events", location: "Various Venues" },
-                  { time: "02:00 PM", event: "Tech Treasure Hunt", location: "Campus Wide" },
-                  { time: "04:00 PM", event: "Solo Singing", location: "Open Air Theatre" },
-                  { time: "06:00 PM", event: "Ramp Walk", location: "Main Stage" },
+                  { time: "8:30 AM", event: "Registration & Reporting", location: "Main Gate" },
+                  { time: "9:00 AM", event: "Inauguration Ceremony", location: "Main Stage" },
+                  { time: "9:30 AM", event: "IT & Management Events Begin", location: "Various Venues" },
+                  { time: "10:00 AM", event: "Cultural Events Begin", location: "Main Stage" },
+                  { time: "11:00 AM", event: "Sports Events Begin", location: "College Ground" },
+                  { time: "4:00 PM", event: "Finals & Competitions", location: "Various Venues" },
+                  { time: "6:00 PM", event: "Prize Distribution & Valedictory", location: "Main Stage" },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 group">
                     <div className="text-[12px] text-zinc-600 w-20 shrink-0 pt-0.5 font-medium">{item.time}</div>
@@ -198,34 +200,75 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Day 2 */}
+            {/* Guidelines */}
             <div className="card-static p-6">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                  <span className="text-indigo-400 font-bold text-lg">19</span>
+                <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold text-[15px]">Day 2</h3>
-                  <p className="text-[13px] text-zinc-500">February 19, 2026 • Wednesday</p>
+                  <h3 className="text-white font-semibold text-[15px]">General Guidelines</h3>
+                  <p className="text-[13px] text-zinc-500">Important rules to follow</p>
                 </div>
               </div>
-              <div className="space-y-4">
+              <ul className="space-y-3">
                 {[
-                  { time: "08:00 AM", event: "Cricket Tournament", location: "College Ground" },
-                  { time: "09:00 AM", event: "Logic Overload Finals", location: "Computer Lab 2" },
-                  { time: "02:00 PM", event: "Brand Building Presentations", location: "Auditorium" },
-                  { time: "04:00 PM", event: "Solo Dance Competition", location: "Main Stage" },
-                  { time: "07:00 PM", event: "Prize Distribution & Closing", location: "Main Stage" },
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-4 group">
-                    <div className="text-[12px] text-zinc-600 w-20 shrink-0 pt-0.5 font-medium">{item.time}</div>
-                    <div className="flex-1">
-                      <p className="text-[14px] text-zinc-200 group-hover:text-white transition-colors">{item.event}</p>
-                      <p className="text-[12px] text-zinc-600">{item.location}</p>
-                    </div>
-                  </div>
+                  "College ID is mandatory for all participants",
+                  "Reporting time - 8:30 AM onwards",
+                  "Register on or before 15th February 2026",
+                  "Judges decision will be considered as final",
+                  "Discipline should be maintained at all times",
+                  "Participants must stay in designated areas",
+                  "No refunds after registration",
+                ].map((rule, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <svg className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-[13px] text-zinc-400">{rule}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
+            </div>
+          </div>
+
+          {/* Coordinators */}
+          <div className="mt-10">
+            <h3 className="text-center text-[14px] text-zinc-500 uppercase tracking-wider mb-6">Faculty Coordinators</h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              {facultyCoordinators.map((coord) => (
+                <div key={coord.name} className="card-static px-5 py-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
+                    <span className="text-orange-400 text-[12px] font-semibold">
+                      {coord.name.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-[13px] text-white font-medium">{coord.name}</p>
+                    <a href={`tel:${coord.phone.replace(/\s/g, '')}`} className="text-[12px] text-zinc-500 hover:text-orange-400 transition-colors">
+                      {coord.phone}
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Student Council */}
+          <div className="mt-8">
+            <h3 className="text-center text-[14px] text-zinc-500 uppercase tracking-wider mb-6">Student Council</h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              {studentCouncil.map((member) => (
+                <div key={member.name} className="card-static px-4 py-3 text-center">
+                  <p className="text-[11px] text-zinc-600 uppercase tracking-wide mb-1">{member.role}</p>
+                  <p className="text-[13px] text-white font-medium">{member.name}</p>
+                  <a href={`tel:${member.phone}`} className="text-[12px] text-zinc-500 hover:text-orange-400 transition-colors">
+                    {member.phone}
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -234,7 +277,7 @@ export default function Home() {
       {/* Registration CTA */}
       <section id="register" className="section bg-[#09090b]">
         <div className="container-main">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600/10 via-[#16161a] to-indigo-600/10 border border-white/[0.06] p-8 md:p-14">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-600/10 via-[#16161a] to-red-600/10 border border-white/[0.06] p-8 md:p-14">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-[0.03]">
               <div
@@ -248,18 +291,18 @@ export default function Home() {
 
             <div className="relative z-10 text-center max-w-2xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-                Ready to Participate?
+                Ready to Participate in <span className="text-orange-400">SHRESHTA</span>?
               </h2>
               <p className="text-[15px] text-zinc-500 mb-8 leading-relaxed">
-                Don&apos;t miss out on the biggest inter-college fest of the year.
-                Register now and showcase your talent at SDC Fest 2026!
+                Don&apos;t miss out on the biggest inter-college fest! Register on or before
+                <strong className="text-orange-300"> 15th February 2026</strong> for all events.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link href="#events" className="btn btn-primary px-8 py-3 text-[14px]">
                   Browse Events
                 </Link>
-                <a href="mailto:sdcfest@shesha.edu.in" className="btn btn-secondary px-8 py-3 text-[14px]">
-                  Contact Organizers
+                <a href={`tel:${collegeInfo.phone.replace(/\s/g, '')}`} className="btn btn-secondary px-8 py-3 text-[14px]">
+                  Call: {collegeInfo.phone}
                 </a>
               </div>
             </div>
@@ -275,8 +318,8 @@ export default function Home() {
                   </svg>
                 ),
                 title: "Event Date",
-                value: "February 18-19, 2026",
-                color: "#8b5cf6"
+                value: "17th February 2026 (Tuesday)",
+                color: "#f97316"
               },
               {
                 icon: (
@@ -286,17 +329,17 @@ export default function Home() {
                   </svg>
                 ),
                 title: "Venue",
-                value: "Shesha College, Mysore",
+                value: "SDC Mysuru, Hebbal Ring Road",
                 color: "#ec4899"
               },
               {
                 icon: (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                   </svg>
                 ),
-                title: "Need Help?",
-                value: "+91 98765 43210",
+                title: "Website",
+                value: "sdcmysore.ac.in",
                 color: "#10b981"
               },
             ].map((item) => (

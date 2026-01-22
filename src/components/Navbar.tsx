@@ -25,9 +25,9 @@ export default function Navbar() {
 
     const categoryLinks = [
         { name: "IT Events", href: "/#it-events", color: "#8b5cf6", count: 4 },
-        { name: "Management", href: "/#management-events", color: "#f59e0b", count: 4 },
-        { name: "Cultural", href: "/#cultural-events", color: "#ec4899", count: 3 },
-        { name: "Sports", href: "/#sports-events", color: "#10b981", count: 1 },
+        { name: "Management", href: "/#management-events", color: "#f59e0b", count: 5 },
+        { name: "Cultural", href: "/#cultural-events", color: "#ec4899", count: 4 },
+        { name: "Sports", href: "/#sports-events", color: "#10b981", count: 2 },
     ];
 
     return (
@@ -41,12 +41,12 @@ export default function Navbar() {
                 <div className="flex items-center justify-between h-16 lg:h-[72px]">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/30 transition-shadow">
-                            <span className="text-white font-bold text-sm tracking-tight">SDC</span>
+                        <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 transition-shadow">
+                            <span className="text-white font-bold text-[11px] tracking-tight">SDC</span>
                         </div>
                         <div className="hidden sm:block">
-                            <p className="text-white font-semibold text-[15px] tracking-tight">SDC Fest 2026</p>
-                            <p className="text-[11px] text-zinc-500 -mt-0.5">Shesha College Mysore</p>
+                            <p className="text-white font-semibold text-[15px] tracking-tight">SHRESHTA 2026</p>
+                            <p className="text-[11px] text-zinc-500 -mt-0.5">SDC Mysuru</p>
                         </div>
                     </Link>
 

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getEventById, allEvents } from "@/data/events";
+import { getEventById, allEvents, collegeInfo } from "@/data/events";
 
 // Generate static params for all events
 export function generateStaticParams() {
@@ -17,12 +17,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
     if (!event) {
         return {
-            title: "Event Not Found | SDC Fest 2026",
+            title: "Event Not Found | SHRESHTA 2026",
         };
     }
 
     return {
-        title: `${event.title} | SDC Fest 2026`,
+        title: `${event.title} | SHRESHTA 2026 - SDC Mysuru`,
         description: event.description,
     };
 }
@@ -52,7 +52,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                     src={event.image}
                     alt={event.title}
                     fill
-                    className="object-cover"
+                    className="object-cover object-center"
                     priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-black/20" />
@@ -81,6 +81,9 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-3">
                             {event.title}
                         </h1>
+                        {event.titleKannada && (
+                            <p className="text-[14px] text-zinc-500 mb-2">{event.titleKannada}</p>
+                        )}
                         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
                             {event.description}
                         </p>
@@ -121,7 +124,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                             <ul className="space-y-3">
                                 {event.rules.map((rule, index) => (
                                     <li key={index} className="flex items-start gap-3">
-                                        <span className="flex-shrink-0 w-6 h-6 rounded-md bg-white/[0.04] text-zinc-500 flex items-center justify-center text-[11px] font-semibold">
+                                        <span className="flex-shrink-0 w-6 h-6 rounded-md bg-orange-500/10 text-orange-400 flex items-center justify-center text-[11px] font-semibold">
                                             {index + 1}
                                         </span>
                                         <span className="text-[14px] text-zinc-400 pt-0.5">{rule}</span>
@@ -130,31 +133,20 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                             </ul>
                         </div>
 
-                        {/* Prizes */}
-                        <div className="card-static p-6">
-                            <h2 className="text-[15px] font-semibold text-white mb-5 flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center">
-                                    <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                        {/* Important Notice */}
+                        <div className="card-static p-6 border-orange-500/20 bg-orange-500/5">
+                            <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
+                                    <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
                                 </div>
-                                Prize Pool
-                            </h2>
-                            <div className="grid grid-cols-3 gap-3">
-                                <div className="text-center p-4 rounded-xl bg-gradient-to-b from-amber-500/8 to-transparent border border-amber-500/15">
-                                    <div className="text-2xl mb-2">🥇</div>
-                                    <div className="text-[11px] text-amber-400 font-semibold mb-1 uppercase tracking-wide">1st Place</div>
-                                    <div className="text-lg font-bold text-white">{event.prizes.first}</div>
-                                </div>
-                                <div className="text-center p-4 rounded-xl bg-gradient-to-b from-zinc-400/8 to-transparent border border-zinc-400/15">
-                                    <div className="text-2xl mb-2">🥈</div>
-                                    <div className="text-[11px] text-zinc-400 font-semibold mb-1 uppercase tracking-wide">2nd Place</div>
-                                    <div className="text-lg font-bold text-white">{event.prizes.second}</div>
-                                </div>
-                                <div className="text-center p-4 rounded-xl bg-gradient-to-b from-orange-500/8 to-transparent border border-orange-500/15">
-                                    <div className="text-2xl mb-2">🥉</div>
-                                    <div className="text-[11px] text-orange-400 font-semibold mb-1 uppercase tracking-wide">3rd Place</div>
-                                    <div className="text-lg font-bold text-white">{event.prizes.third}</div>
+                                <div>
+                                    <h3 className="text-[14px] font-semibold text-orange-300 mb-1">Important</h3>
+                                    <p className="text-[13px] text-orange-200/70">
+                                        College ID is mandatory. Register on or before <strong>15th February 2026</strong>.
+                                        Reporting time is <strong>8:30 AM</strong>. Judges decision will be final.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -190,7 +182,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                                     },
                                     {
                                         icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
-                                        label: "Registration Fee",
+                                        label: "Entry Fee",
                                         value: event.registrationFee
                                     },
                                 ].map((item, i) => (
@@ -202,19 +194,19 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-[11px] text-zinc-600 uppercase tracking-wide">{item.label}</p>
-                                            <p className="text-[13px] text-white truncate">{item.value}</p>
+                                            <p className="text-[13px] text-white">{item.value}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
                             {/* Register Button */}
-                            <button
-                                className="w-full btn text-[13px] py-3"
-                                style={{ background: `linear-gradient(135deg, ${config.color} 0%, ${config.color}dd 100%)` }}
+                            <a
+                                href={`tel:${event.coordinatorPhone}`}
+                                className="w-full btn text-[13px] py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
                             >
-                                Register for Event
-                            </button>
+                                Register Now
+                            </a>
                         </div>
 
                         {/* Coordinator Card */}
@@ -225,33 +217,37 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                                     className="w-11 h-11 rounded-xl flex items-center justify-center text-[13px] font-semibold"
                                     style={{ backgroundColor: `${config.color}15`, color: config.color }}
                                 >
-                                    {event.coordinator.split(" ").map((n) => n[0]).join("")}
+                                    {event.coordinator.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                                 </div>
                                 <div>
                                     <p className="text-[14px] text-white font-medium">{event.coordinator}</p>
-                                    <p className="text-[12px] text-zinc-500">{event.coordinatorRole}</p>
+                                    <p className="text-[12px] text-zinc-500">Event Coordinator</p>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <a
-                                    href={`tel:${event.coordinatorPhone}`}
-                                    className="flex items-center gap-2.5 text-[13px] text-zinc-400 hover:text-white transition-colors"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                    {event.coordinatorPhone}
-                                </a>
-                                <a
-                                    href={`mailto:${event.coordinatorEmail}`}
-                                    className="flex items-center gap-2.5 text-[13px] text-zinc-400 hover:text-white transition-colors"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                    {event.coordinatorEmail}
-                                </a>
-                            </div>
+                            <a
+                                href={`tel:${event.coordinatorPhone}`}
+                                className="flex items-center gap-2.5 text-[14px] text-orange-400 hover:text-orange-300 transition-colors font-medium"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                {event.coordinatorPhone}
+                            </a>
+                        </div>
+
+                        {/* College Info Card */}
+                        <div className="card-static p-5">
+                            <h3 className="text-[13px] font-semibold text-white mb-4 uppercase tracking-wider">Venue</h3>
+                            <p className="text-[13px] text-zinc-400 mb-2">{collegeInfo.name}</p>
+                            <p className="text-[12px] text-zinc-600 mb-4">{collegeInfo.address}</p>
+                            <a
+                                href={collegeInfo.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[12px] text-orange-400 hover:text-orange-300 transition-colors"
+                            >
+                                Visit Website →
+                            </a>
                         </div>
                     </div>
                 </div>

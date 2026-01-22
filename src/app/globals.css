@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Professional Dark Theme */
+  /* SHRESHTA Dark Theme */
   --bg-primary: #09090b;
   --bg-secondary: #0c0c0e;
   --bg-tertiary: #111113;
@@ -18,10 +18,10 @@
   --text-muted: #71717a;
   --text-faint: #52525b;
 
-  /* Accent Colors */
-  --accent-primary: #7c3aed;
-  --accent-primary-hover: #8b5cf6;
-  --accent-secondary: #6366f1;
+  /* Primary Colors - Orange/Red Theme */
+  --accent-primary: #f97316;
+  --accent-primary-hover: #fb923c;
+  --accent-secondary: #ef4444;
 
   /* Category Colors */
   --cat-it: #8b5cf6;
@@ -202,7 +202,7 @@ h4 {
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -218,11 +218,11 @@ h4 {
 .btn-primary {
   background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.25);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
   transform: translateY(-1px);
 }
 
@@ -260,8 +260,8 @@ h4 {
 .card:hover {
   border-color: var(--border-default);
   background: var(--bg-elevated);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .card-static {
@@ -280,31 +280,31 @@ h4 {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .badge-it {
-  background: rgba(139, 92, 246, 0.12);
+  background: rgba(139, 92, 246, 0.15);
   color: #a78bfa;
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.25);
 }
 
 .badge-management {
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(245, 158, 11, 0.15);
   color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
 .badge-cultural {
-  background: rgba(236, 72, 153, 0.12);
+  background: rgba(236, 72, 153, 0.15);
   color: #f472b6;
-  border: 1px solid rgba(236, 72, 153, 0.2);
+  border: 1px solid rgba(236, 72, 153, 0.25);
 }
 
 .badge-sports {
-  background: rgba(16, 185, 129, 0.12);
+  background: rgba(16, 185, 129, 0.15);
   color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 /* Sections */
@@ -341,20 +341,6 @@ h4 {
   max-width: 560px;
 }
 
-/* Gradient Text */
-.text-gradient {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Divider */
-.divider {
-  height: 1px;
-  background: var(--border-subtle);
-}
-
 /* Focus States */
 :focus-visible {
   outline: 2px solid var(--accent-primary);
@@ -363,7 +349,7 @@ h4 {
 
 /* Selection */
 ::selection {
-  background: rgba(124, 58, 237, 0.3);
+  background: rgba(249, 115, 22, 0.3);
   color: white;
 }
 
@@ -398,47 +384,11 @@ a {
   text-decoration: none;
 }
 
-/* Overlay */
-.overlay-gradient {
-  background: linear-gradient(180deg, transparent 0%, rgba(9, 9, 11, 0.6) 50%, rgba(9, 9, 11, 0.95) 100%);
-}
-
 /* Glass Effect */
 .glass {
   background: rgba(22, 22, 26, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-}
-
-/* Input Styles */
-input,
-textarea,
-select {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 14px;
-  color: var(--text-primary);
-  transition: border-color 0.2s ease;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: var(--text-faint);
-}
-
-/* Image Optimization */
-img {
-  max-width: 100%;
-  height: auto;
 }
 
 /* Utility Classes */
@@ -454,4 +404,10 @@ img {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Smooth Image Loading */
+img {
+  max-width: 100%;
+  height: auto;
 }
