@@ -38,13 +38,15 @@ export default function Home() {
               <span className="text-white">Featured</span>
               <span className="text-gold-gradient ml-3">Events</span>
             </h2>
-            <p className="section-subtitle mx-auto mt-4">
-              Compete in a diverse range of events designed to challenge your skills and creativity
-            </p>
+            <div className="flex justify-center w-full">
+              <p className="section-subtitle mt-4 text-center max-w-2xl">
+                Compete in a diverse range of events designed to challenge your skills and creativity
+              </p>
+            </div>
           </div>
 
           {/* Category Filter Tabs */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
+          <div className="flex flex-wrap justify-center gap-3" style={{ marginBottom: '3%' }}>
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -62,8 +64,10 @@ export default function Home() {
               <EventCard
                 key={event.id}
                 title={event.title}
+                titleKannada={event.titleKannada}
                 description={event.description}
                 coordinator={event.coordinator}
+                coordinatorPhone={event.coordinatorPhone}
                 category={event.category}
                 href={`/events/${event.id}`}
                 time={event.time}

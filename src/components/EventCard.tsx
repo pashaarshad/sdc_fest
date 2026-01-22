@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { User, Phone, IndianRupee, Users } from "lucide-react";
 
 interface EventCardProps {
     title: string;
+    titleKannada?: string;
     description: string;
     coordinator: string;
+    coordinatorPhone?: string;
     category: "it" | "management" | "cultural" | "sports";
     href: string;
     time: string;
@@ -17,7 +20,10 @@ interface EventCardProps {
 
 export default function EventCard({
     title,
+    titleKannada,
     description,
+    coordinator,
+    coordinatorPhone,
     category,
     href,
     time,
@@ -26,19 +32,19 @@ export default function EventCard({
     fee,
 }: EventCardProps) {
     const categoryConfig = {
-        it: { label: "Tech", badge: "badge-tech", color: "#3b82f6" },
-        management: { label: "Management", badge: "badge-management", color: "#d4a843" },
-        cultural: { label: "Cultural", badge: "badge-cultural", color: "#ec4899" },
-        sports: { label: "Sports", badge: "badge-sports", color: "#22c55e" },
+        it: { label: "IT", badge: "bg-blue-500/10 text-blue-500 border-blue-500/20", color: "#3b82f6" },
+        management: { label: "Management", badge: "bg-purple-500/10 text-purple-500 border-purple-500/20", color: "#a855f7" },
+        cultural: { label: "Cultural", badge: "bg-pink-500/10 text-pink-500 border-pink-500/20", color: "#ec4899" },
+        sports: { label: "Sports", badge: "bg-green-500/10 text-green-500 border-green-500/20", color: "#22c55e" },
     };
 
     const config = categoryConfig[category];
 
     return (
-        <Link href={href} className="block group">
-            <article className="card h-full flex flex-col">
-                {/* Image */}
-                <div className="relative h-48 overflow-hidden bg-[#1e1e24]">
+        <Link href={href} className="block group h-full">
+            <article className="h-full flex flex-col bg-[#0f0f13] border border-white/[0.08] rounded-xl overflow-hidden hover:border-[#d4a843]/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(212,168,67,0.05)]">
+                {/* Image Section */}
+                <div className="relative h-48 overflow-hidden">
                     <Image
                         src={image}
                         alt={title}
@@ -46,45 +52,76 @@ export default function EventCard({
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f13] via-[#0f0f13]/50 to-transparent" />
+
                     {/* Category Badge */}
-                    <div className="absolute top-3 left-3">
-                        <span className={`badge ${config.badge}`}>
+                    <div className="absolute top-4 left-4">
+                        <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-md ${config.badge}`}>
                             {config.label}
                         </span>
                     </div>
                 </div>
 
-                {/* Content */}
-                <div className="flex flex-col flex-1 p-5">
+                <div className="p-6 flex flex-col flex-grow -mt-6 relative z-10">
                     {/* Title */}
-                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#d4a843] transition-colors">
+                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-[#d4a843] transition-colors leading-tight">
                         {title}
                     </h3>
 
+                    {/* Kannada Title */}
+                    {titleKannada && (
+                        <h4 className="text-sm font-medium text-[#d4a843] mb-3">
+                            {titleKannada}
+                        </h4>
+                    )}
+
                     {/* Description */}
-                    <p className="text-[13px] text-zinc-500 mb-4 line-clamp-2 flex-1">
+                    <p className="text-sm text-zinc-400 mb-6 line-clamp-2 flex-grow">
                         {description}
                     </p>
 
-                    {/* Meta Info */}
-                    <div className="flex items-center justify-between text-[12px] text-zinc-500 pt-4 border-t border-white/[0.04]">
-                        <div className="flex items-center gap-1.5">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>{time}</span>
+                    {/* Divider */}
+                    <div className="h-px w-full bg-white/[0.08] mb-6" />
+
+                    {/* Meta Details */}
+                    <div className="space-y-4">
+                        {/* Team Size */}
+                        <div className="flex items-start gap-3">
+                            <div className="p-2 rounded-lg bg-[#1a1a20] text-zinc-400 shrink-0">
+                                <Users className="w-4 h-4" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium">Team Size</p>
+                                <p className="text-sm text-zinc-300 font-medium">{teamSize}</p>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <span>{teamSize}</span>
+
+                        {/* Entry Fee */}
+                        <div className="flex items-start gap-3">
+                            <div className="p-2 rounded-lg bg-[#1a1a20] text-[#d4a843] shrink-0">
+                                <IndianRupee className="w-4 h-4" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium">Entry Fee</p>
+                                <p className="text-sm text-white font-medium">{fee}</p>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1.5 text-[#d4a843]">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                            </svg>
-                            <span>{fee}</span>
+
+                        {/* Coordinator */}
+                        <div className="flex items-start gap-3">
+                            <div className="p-2 rounded-lg bg-[#1a1a20] text-zinc-400 shrink-0">
+                                <Phone className="w-4 h-4" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium">Coordinator</p>
+                                <div className="flex flex-col">
+                                    <span className="text-sm text-zinc-300 font-medium">{coordinator}</span>
+                                    {coordinatorPhone && (
+                                        <span className="text-sm text-[#d4a843]">{coordinatorPhone}</span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
