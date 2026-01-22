@@ -102,6 +102,13 @@ export default function Footer() {
                         </a>
                     </div>
                 </div>
+
+                {/* Designer Credit */}
+                <div className="mt-8 pt-8 border-t border-white/[0.04] text-center">
+                    <p className="text-zinc-300 text-sm">
+                        Designed by <a href="https://arshadpasha.tech" target="_blank" rel="noopener noreferrer" className="text-[#d4a843] hover:text-[#e5b854] transition-colors font-bold hover:underline decoration-[#d4a843]/30 underline-offset-4">Arshad Pasha</a>
+                    </p>
+                </div>
             </div>
         </footer>
     );
