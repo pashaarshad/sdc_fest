@@ -78,12 +78,12 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                         </div>
 
                         {/* Desktop Logo */}
-                        <div className="hidden lg:block relative w-48 h-48 opacity-20 animate-pulse">
+                        <div className="hidden lg:block relative w-48 h-48 opacity-20 hover:opacity-100 transition-opacity duration-500">
                             <Image
-                                src="/main_logo.png"
+                                src={event.image}
                                 alt="Event Logo"
                                 fill
-                                className="object-contain"
+                                className="object-contain rounded-xl"
                             />
                         </div>
                     </div>

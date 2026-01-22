@@ -63,7 +63,7 @@ export default function EventCard({
                     </div>
                 </div>
 
-                <div className="p-5 flex flex-col flex-grow -mt-6 relative z-10">
+                <div className="p-8 flex flex-col flex-grow -mt-6 relative z-10">
                     {/* Title */}
                     <h3 className="text-xl font-bold text-white mb-1 group-hover:text-[#d4a843] transition-colors leading-tight">
                         {title}
