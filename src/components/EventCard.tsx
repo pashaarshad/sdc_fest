@@ -65,7 +65,7 @@ export default function EventCard({
 
                         {/* Category Badge - Professional Pill */}
                         <div className="absolute top-6 left-6 flex items-center justify-between w-[calc(100%-48px)]">
-                            <span className="bg-black/80 text-white text-[10px] font-bold px-5 py-2 rounded-full border border-white/10 backdrop-blur-md uppercase tracking-widest">
+                            <span className="inline-flex items-center justify-center bg-black/80 text-white text-[10px] font-bold min-w-[72px] px-4 py-2.5 rounded-full border border-white/10 backdrop-blur-md uppercase tracking-widest">
                                 {categoryLabels[category]}
                             </span>
                             <div className="w-9 h-9 rounded-full bg-[#d4a843] flex items-center justify-center text-black transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 shadow-lg">
@@ -76,8 +76,8 @@ export default function EventCard({
 
                     {/* Content Section - Massive Padding for Professionalism */}
                     <div className="p-10 flex flex-col flex-grow">
-                        {/* Title Section - Increased Margin */}
-                        <div className="mb-8">
+                        {/* Title Section - Added 1% Margin */}
+                        <div className="mb-8 m-">
                             <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-[#d4a843] transition-colors leading-tight tracking-tight">
                                 {title}
                             </h3>
@@ -86,8 +86,8 @@ export default function EventCard({
                             )}
                         </div>
 
-                        {/* Description Section - Increased Margin */}
-                        <div className="mb-10">
+                        {/* Description Section - Added 1% Margin */}
+                        <div className="mb-10 m-1">
                             <p className="text-[15px] text-zinc-400 leading-relaxed line-clamp-3">
                                 {description}
                             </p>
@@ -99,7 +99,7 @@ export default function EventCard({
                         {/* Details - Row Alignment Fixed */}
                         <div className="space-y-7 mt-auto">
                             {/* Team Size */}
-                            <div className="flex items-center gap-5 group/item">
+                            <div className="flex items-center gap-5 group/item m-1">
                                 <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shadow-[0_0_15px_rgba(212,168,67,0.1)] shrink-0">
                                     <Users className="w-5 h-5" />
                                 </div>
@@ -110,7 +110,7 @@ export default function EventCard({
                             </div>
 
                             {/* Entry Fee */}
-                            <div className="flex items-center gap-5 group/item">
+                            <div className="flex items-center gap-5 group/item m-1">
                                 <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shadow-[0_0_15px_rgba(212,168,67,0.1)] shrink-0">
                                     <IndianRupee className="w-5 h-5" />
                                 </div>
@@ -121,7 +121,7 @@ export default function EventCard({
                             </div>
 
                             {/* Coordinator */}
-                            <div className="flex items-center gap-5 group/item">
+                            <div className="flex items-center gap-5 group/item m-1">
                                 <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shadow-[0_0_15px_rgba(212,168,67,0.1)] shrink-0">
                                     <Phone className="w-5 h-5" />
                                 </div>
