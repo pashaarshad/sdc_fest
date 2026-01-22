@@ -31,7 +31,7 @@ export default function EventCard({
     image,
     teamSize,
     fee,
-    index = 0
+    index = 0,
 }: EventCardProps) {
     const categoryLabels = {
         it: "IT",
@@ -63,8 +63,8 @@ export default function EventCard({
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#111115] via-transparent to-black/30" />
 
-                        {/* Category Badge - Professional Pill */}
-                        <div className="absolute top-6 left-6 flex items-center justify-between w-[calc(100%-48px)]">
+                        {/* Category Badge */}
+                        <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
                             <span className="inline-flex items-center justify-center bg-black/80 text-white text-[10px] font-bold min-w-[72px] px-4 py-2.5 rounded-full border border-white/10 backdrop-blur-md uppercase tracking-widest">
                                 {categoryLabels[category]}
                             </span>
@@ -74,71 +74,88 @@ export default function EventCard({
                         </div>
                     </div>
 
-                    {/* Content Section - Massive Padding for Professionalism */}
-                    <div className="p-10 flex flex-col flex-grow">
-                        {/* Title Section - Added 1% Margin */}
-                        <div className="mb-8 m-">
+                    {/* Content Section */}
+                    <div className="px-10 py-12 flex flex-col flex-grow">
+
+                        {/* Title */}
+                        <div className="mb-8">
                             <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-[#d4a843] transition-colors leading-tight tracking-tight">
                                 {title}
                             </h3>
                             {titleKannada && (
-                                <p className="text-[17px] font-medium text-[#d4a843]/90">{titleKannada}</p>
+                                <p className="text-[17px] font-medium text-[#d4a843]/90">
+                                    {titleKannada}
+                                </p>
                             )}
                         </div>
 
-                        {/* Description Section - Added 1% Margin */}
-                        <div className="mb-10 m-1">
+                        {/* Description */}
+                        <div className="mb-10">
                             <p className="text-[15px] text-zinc-400 leading-relaxed line-clamp-3">
                                 {description}
                             </p>
                         </div>
 
-                        {/* Divider Line */}
+                        {/* Divider */}
                         <div className="h-px w-full bg-white/[0.05] mb-10" />
 
-                        {/* Details - Row Alignment Fixed */}
-                        <div className="space-y-7 mt-auto">
+                        {/* Details */}
+                        <div className="space-y-8 mt-auto">
+
                             {/* Team Size */}
-                            <div className="flex items-center gap-5 group/item m-1">
-                                <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shadow-[0_0_15px_rgba(212,168,67,0.1)] shrink-0">
+                            <div className="flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shrink-0">
                                     <Users className="w-5 h-5" />
                                 </div>
-                                <div className="flex flex-col justify-center">
-                                    <span className="text-[11px] text-zinc-500 uppercase tracking-[0.2em] font-bold mb-1">Team Size</span>
-                                    <span className="text-[16px] text-zinc-100 font-semibold">{teamSize}</span>
+                                <div>
+                                    <span className="text-[11px] text-zinc-500 uppercase tracking-[0.2em] font-bold block mb-1">
+                                        Team Size
+                                    </span>
+                                    <span className="text-[16px] text-zinc-100 font-semibold">
+                                        {teamSize}
+                                    </span>
                                 </div>
                             </div>
 
                             {/* Entry Fee */}
-                            <div className="flex items-center gap-5 group/item m-1">
-                                <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shadow-[0_0_15px_rgba(212,168,67,0.1)] shrink-0">
+                            <div className="flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shrink-0">
                                     <IndianRupee className="w-5 h-5" />
                                 </div>
-                                <div className="flex flex-col justify-center">
-                                    <span className="text-[11px] text-zinc-500 uppercase tracking-[0.2em] font-bold mb-1">Entry Fee</span>
-                                    <span className="text-[16px] text-white font-bold">{fee}</span>
+                                <div>
+                                    <span className="text-[11px] text-zinc-500 uppercase tracking-[0.2em] font-bold block mb-1">
+                                        Entry Fee
+                                    </span>
+                                    <span className="text-[16px] text-white font-bold">
+                                        {fee}
+                                    </span>
                                 </div>
                             </div>
 
                             {/* Coordinator */}
-                            <div className="flex items-center gap-5 group/item m-1">
-                                <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shadow-[0_0_15px_rgba(212,168,67,0.1)] shrink-0">
+                            <div className="flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shrink-0">
                                     <Phone className="w-5 h-5" />
                                 </div>
-                                <div className="flex flex-col justify-center">
-                                    <span className="text-[11px] text-zinc-500 uppercase tracking-[0.2em] font-bold mb-1">Coordinator</span>
-                                    <div className="flex flex-col">
-                                        <span className="text-[16px] text-zinc-100 font-semibold leading-tight">{coordinator}</span>
-                                        {coordinatorPhone && (
-                                            <span className="text-[14px] text-[#d4a843] font-bold mt-1 tracking-wide">{coordinatorPhone}</span>
-                                        )}
-                                    </div>
+                                <div>
+                                    <span className="text-[11px] text-zinc-500 uppercase tracking-[0.2em] font-bold block mb-1">
+                                        Coordinator
+                                    </span>
+                                    <span className="text-[16px] text-zinc-100 font-semibold leading-tight">
+                                        {coordinator}
+                                    </span>
+                                    {coordinatorPhone && (
+                                        <span className="text-[14px] text-[#d4a843] font-bold mt-1 block tracking-wide">
+                                            {coordinatorPhone}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
-                    {/* Subtle Border Glow on Hover */}
+                    {/* Hover Border */}
                     <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#d4a843]/20 rounded-2xl pointer-events-none transition-colors duration-500" />
                 </article>
             </Link>
