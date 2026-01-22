@@ -24,74 +24,88 @@ export default function HeroSection() {
                 </div>
 
                 {/* Main Title */}
-                <h1 className="font-[family-name:var(--font-playfair)] text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight mb-6 animate-slide-up">
+                <h1 className="font-[family-name:var(--font-playfair)] text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight mb-8 animate-slide-up">
                     <span className="text-white">SHRESHTA</span>
                     <span className="text-gold-gradient ml-4">2026</span>
                 </h1>
 
-                {/* Description */}
+                {/* Description - Single Centered Line */}
                 <p
-                    className="text-lg text-zinc-400 max-w-2xl mx-auto mb-8 animate-slide-up"
+                    className="text-lg md:text-xl text-zinc-400 max-w-3xl mx-auto mb-10 animate-slide-up text-center"
                     style={{ animationDelay: "0.1s" }}
                 >
                     Experience the grandest intercollegiate fest featuring competitions in
-                    <br className="hidden md:block" />
-                    Technology, Management, Sports & Culture.
+                    <br className="md:hidden" />
+                    <span className="text-white font-medium"> IT, Management, Cultural & Sports</span> events.
                 </p>
 
-                {/* Date & Location */}
+                {/* Info Pills - Date, Time, Venue */}
                 <div
-                    className="flex flex-wrap items-center justify-center gap-6 mb-12 animate-slide-up"
+                    className="flex flex-wrap items-center justify-center gap-3 mb-12 animate-slide-up"
                     style={{ animationDelay: "0.15s" }}
                 >
-                    <div className="flex items-center gap-2 text-zinc-400">
-                        <svg className="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex items-center gap-2 bg-[#1a1a1f] border border-[#d4a843]/30 rounded-full px-4 py-2.5">
+                        <svg className="w-4 h-4 text-[#d4a843]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <span>February 17, 2026</span>
+                        <span className="text-sm text-white">February 17, 2026, Tuesday</span>
                     </div>
-                    <div className="w-1 h-1 bg-zinc-600 rounded-full hidden md:block" />
-                    <div className="flex items-center gap-2 text-zinc-400">
-                        <svg className="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex items-center gap-2 bg-[#1a1a1f] border border-white/10 rounded-full px-4 py-2.5">
+                        <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-sm text-zinc-300">8:30 AM onwards</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-[#1a1a1f] border border-white/10 rounded-full px-4 py-2.5">
+                        <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span>SDC Mysuru</span>
+                        <span className="text-sm text-zinc-300">Seshadripuram Degree College, Mysuru</span>
                     </div>
                 </div>
 
                 {/* Countdown Timer */}
-                <div className="mb-14 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+                <div className="mb-10 animate-slide-up" style={{ animationDelay: "0.2s" }}>
                     <CountdownTimer targetDate={festDate} />
+                </div>
+
+                {/* CTA Buttons */}
+                <div
+                    className="flex flex-wrap items-center justify-center gap-4 mb-16 animate-slide-up"
+                    style={{ animationDelay: "0.25s" }}
+                >
+                    <Link href="#events" className="btn btn-primary px-8 py-3.5 text-[15px]">
+                        Explore Events
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </Link>
+                    <Link href="#register" className="btn btn-secondary px-8 py-3.5 text-[15px]">
+                        Register Now
+                    </Link>
                 </div>
 
                 {/* Stats */}
                 <div
-                    className="flex flex-wrap items-center justify-center gap-8 md:gap-16 animate-slide-up"
-                    style={{ animationDelay: "0.25s" }}
+                    className="flex flex-wrap items-center justify-center gap-6 md:gap-10 animate-slide-up"
+                    style={{ animationDelay: "0.3s" }}
                 >
                     {[
-                        { value: "15+", label: "Events" },
-                        { value: "50+", label: "Colleges" },
-                        { value: "1000+", label: "Participants" },
+                        { value: "13+", label: "Events" },
+                        { value: "4", label: "Categories" },
+                        { value: "1000+", label: "Expected Participants" },
                         { value: "₹50K+", label: "Prize Pool" },
                     ].map((stat) => (
-                        <div key={stat.label} className="text-center">
-                            <div className="text-3xl md:text-4xl font-bold text-gold-gradient">{stat.value}</div>
-                            <div className="text-sm text-zinc-500 mt-1">{stat.label}</div>
+                        <div
+                            key={stat.label}
+                            className="text-center px-6 py-4 bg-[#14141a] border border-[#d4a843]/20 rounded-2xl min-w-[120px]"
+                        >
+                            <div className="text-2xl md:text-3xl font-bold text-gold-gradient mb-1">{stat.value}</div>
+                            <div className="text-xs text-zinc-500">{stat.label}</div>
                         </div>
                     ))}
                 </div>
-            </div>
-
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-                <Link href="#events" className="flex flex-col items-center gap-2 text-zinc-600 hover:text-[#d4a843] transition-colors">
-                    <span className="text-xs uppercase tracking-widest">Explore</span>
-                    <svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
-                </Link>
             </div>
         </section>
     );
