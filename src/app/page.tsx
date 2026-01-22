@@ -38,7 +38,7 @@ export default function Home() {
               <span className="text-white">Featured</span>
               <span className="text-gold-gradient ml-3">Events</span>
             </h2>
-            <div className="flex justify-center w-full">
+            <div className="flex justify-center w-full" style={{ marginBottom: '1%' }}>
               <p className="section-subtitle mt-4 text-center max-w-2xl">
                 Compete in a diverse range of events designed to challenge your skills and creativity
               </p>

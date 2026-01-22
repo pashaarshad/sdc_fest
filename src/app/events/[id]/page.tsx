@@ -67,13 +67,25 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                 </div>
 
                 {/* Title */}
-                <div className="absolute bottom-0 left-0 right-0 pb-10">
-                    <div className="container-main">
-                        <span className={`badge ${config.badge} mb-4`}>{config.label}</span>
-                        <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3">
-                            {event.title}
-                        </h1>
-                        <p className="text-zinc-400 max-w-2xl">{event.description}</p>
+                <div className="absolute bottom-0 left-0 right-0 pb-10 z-10">
+                    <div className="container-main flex items-end justify-between">
+                        <div>
+                            <span className={`badge ${config.badge} mb-4`}>{config.label}</span>
+                            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3">
+                                {event.title}
+                            </h1>
+                            <p className="text-zinc-400 max-w-2xl">{event.description}</p>
+                        </div>
+
+                        {/* Desktop Logo */}
+                        <div className="hidden lg:block relative w-48 h-48 opacity-20 animate-pulse">
+                            <Image
+                                src="/main_logo.png"
+                                alt="Event Logo"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
                     </div>
                 </div>
             </section>

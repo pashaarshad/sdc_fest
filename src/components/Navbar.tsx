@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+import Image from "next/image";
+
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -25,16 +27,21 @@ export default function Navbar() {
     return (
         <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                    ? "bg-[#0a0a0c]/95 backdrop-blur-xl border-b border-white/[0.04]"
-                    : "bg-transparent"
+                ? "bg-[#0a0a0c]/95 backdrop-blur-xl border-b border-white/[0.04]"
+                : "bg-transparent"
                 }`}
         >
             <nav className="container-main">
                 <div className="flex items-center justify-between h-16 lg:h-20">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="w-9 h-9 rounded-lg bg-[#d4a843] flex items-center justify-center">
-                            <span className="text-black font-bold text-sm">S</span>
+                        <div className="relative w-10 h-10">
+                            <Image
+                                src="/main_logo.png"
+                                alt="SHRESHTA 2026 Logo"
+                                fill
+                                className="object-contain"
+                            />
                         </div>
                         <div className="flex items-baseline gap-1">
                             <span className="text-white font-semibold text-lg">SHRESHTA</span>
