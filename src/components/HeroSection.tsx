@@ -67,22 +67,25 @@ export default function HeroSection() {
                     </motion.h1>
 
                     {/* Subtitle */}
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed text-center"
-                    >
-                        Experience the grandest intercollegiate fest featuring competitions in{" "}
-                        <span className="text-white font-medium"> IT, Management, Cultural & Sports</span> events.
-                    </motion.p>
+                    <div className="w-full flex justify-center">
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className="text-lg sm:text-xl text-zinc-400 max-w-2xl my-10 leading-relaxed"
+                            style={{ textAlign: 'center' }}
+                        >
+                            Experience the grandest intercollegiate fest featuring competitions in IT, Management, Cultural &amp; Sports events.
+                        </motion.p>
+                    </div>
 
                     {/* Event Info Pills */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.3 }}
-                        className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-12"
+                        className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+                        style={{ marginTop: '3%', marginBottom: '2%' }}
                     >
                         <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#18181c] border border-[#d4a843]/30">
                             <Calendar className="w-4 h-4 text-[#d4a843]" />
