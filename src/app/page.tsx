@@ -3,6 +3,7 @@
 import { useState } from "react";
 import HeroSection from "@/components/HeroSection";
 import EventCard from "@/components/EventCard";
+import ScheduleSection from "@/components/ScheduleSection";
 import { itEvents, managementEvents, culturalEvents, sportsEvents, Event, collegeInfo, facultyCoordinators } from "@/data/events";
 import Link from "next/link";
 
@@ -81,75 +82,7 @@ export default function Home() {
       </section>
 
       {/* Event Schedule Section */}
-      <section id="schedule" className="section bg-[#0f0f12]">
-        <div className="container-main">
-          {/* Section Header */}
-          <div className="text-center mb-12">
-            <p className="section-label">TIMELINE</p>
-            <h2 className="section-title">
-              <span className="text-white">Event</span>
-              <span className="text-gold-gradient ml-3">Schedule</span>
-            </h2>
-            <p className="section-subtitle mx-auto mt-4">
-              A day of non-stop action, learning, and entertainment
-            </p>
-          </div>
-
-          {/* Timeline */}
-          <div className="max-w-4xl mx-auto">
-            <div className="card-static p-8">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/30 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-[#d4a843]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-white">Day 1 - Feb 17</h3>
-                  <p className="text-sm text-zinc-500">2026</p>
-                </div>
-              </div>
-
-              <div className="space-y-6 relative">
-                {/* Timeline Line */}
-                <div className="absolute left-[47px] top-0 bottom-0 w-px bg-white/[0.06]" />
-
-                {[
-                  { time: "8:30 AM", event: "Registration & Welcome", location: "Main Gate" },
-                  { time: "9:30 AM", event: "Inaugural Ceremony", location: "Auditorium" },
-                  { time: "10:00 AM", event: "Tech Events Begin", location: "CS Block" },
-                  { time: "10:30 AM", event: "Management Events Begin", location: "MBA Block" },
-                  { time: "2:00 PM", event: "Cultural Events", location: "Main Stage" },
-                  { time: "4:00 PM", event: "Sports Events", location: "Ground" },
-                  { time: "6:00 PM", event: "Prize Distribution & Valedictory", location: "Auditorium" },
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-6 relative">
-                    <div className="w-24 text-right shrink-0">
-                      <div className="flex items-center justify-end gap-2 text-zinc-500">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span className="text-[13px] font-medium">{item.time}</span>
-                      </div>
-                    </div>
-                    {/* Dot */}
-                    <div className="relative z-10 w-3 h-3 bg-[#d4a843] rounded-full mt-1 ring-4 ring-[#0f0f12]" />
-                    <div className="flex-1 pb-6">
-                      <h4 className="text-white font-medium">{item.event}</h4>
-                      <div className="flex items-center gap-1.5 text-zinc-500 text-sm mt-1">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        </svg>
-                        <span>{item.location}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ScheduleSection />
 
       {/* Registration CTA Section */}
       <section id="register" className="section bg-[#0a0a0c]">
