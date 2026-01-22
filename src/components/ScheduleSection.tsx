@@ -76,7 +76,11 @@ const ScheduleSection = () => {
                         </div>
 
                         {/* Events List */}
-                        <div className="space-y-6">
+                        {/* Events List */}
+                        <div className="space-y-8 relative pl-4">
+                            {/* Vertical Line */}
+                            <div className="absolute left-[11px] top-4 bottom-4 w-px bg-zinc-800" />
+
                             {scheduleData.map((item, index) => (
                                 <motion.div
                                     key={index}
@@ -84,24 +88,31 @@ const ScheduleSection = () => {
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: index * 0.05 }}
-                                    className="flex gap-4 group items-start"
+                                    className="relative flex gap-6 items-start group"
                                 >
-                                    {/* Time */}
-                                    <div className="flex-shrink-0 w-24 pt-1">
-                                        <div className="flex items-center gap-2 text-sm text-[#d4a843]/80 font-mono">
-                                            <Clock className="w-3.5 h-3.5" />
-                                            <span>{item.time}</span>
-                                        </div>
+                                    {/* Timeline Dot */}
+                                    <div className="absolute left-0 top-1.5 w-[23px] h-[23px] bg-[#0c0c10] border-2 border-zinc-700 rounded-full group-hover:border-[#d4a843] group-hover:scale-110 transition-all z-10 flex items-center justify-center shadow-[0_0_10px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_15px_rgba(212,168,67,0.4)]">
+                                        <div className="w-2 h-2 bg-zinc-500 rounded-full group-hover:bg-[#d4a843] transition-colors" />
                                     </div>
 
-                                    {/* Event Details */}
-                                    <div className="flex-1 pb-4 border-b border-white/5 last:border-0 last:pb-0">
-                                        <p className="font-bold text-white text-lg group-hover:text-[#d4a843] transition-colors leading-tight">
-                                            {item.event}
-                                        </p>
-                                        <div className="flex items-center gap-1.5 text-xs text-zinc-500 mt-1.5 font-medium">
-                                            <MapPin className="w-3.5 h-3.5" />
-                                            <span>{item.venue}</span>
+                                    {/* Content Wrapper */}
+                                    <div className="flex flex-col sm:flex-row sm:items-start pl-12 w-full">
+                                        {/* Time - Fixed Width */}
+                                        <div className="w-28 shrink-0 pt-0.5 mb-2 sm:mb-0">
+                                            <div className="flex items-center gap-2 text-sm text-[#d4a843]/90 font-mono font-medium bg-[#d4a843]/5 px-2 py-1 rounded border border-[#d4a843]/10 w-fit">
+                                                <span>{item.time}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Event Info */}
+                                        <div className="flex-1 pb-4 border-b border-white/5 group-last:border-0 group-last:pb-0 pt-0.5">
+                                            <p className="font-bold text-white text-lg group-hover:text-[#d4a843] transition-colors leading-tight">
+                                                {item.event}
+                                            </p>
+                                            <div className="flex items-center gap-1.5 text-xs text-zinc-500 mt-2 font-medium group-hover:text-zinc-400 transition-colors">
+                                                <MapPin className="w-3.5 h-3.5" />
+                                                <span>{item.venue}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.div>
