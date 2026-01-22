@@ -66,6 +66,20 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                     </div>
                 </div>
 
+                {/* Desktop Logo Centered Vertically */}
+                <div className="absolute inset-0 z-10 pointer-events-none hidden lg:flex items-center justify-end">
+                    <div className="container-main w-full flex justify-end">
+                        <div className="relative w-56 h-56 mr-12 shadow-2xl rounded-2xl overflow-hidden border border-white/10 bg-black/20 backdrop-blur-sm">
+                            <Image
+                                src={event.image}
+                                alt="Event Logo"
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 {/* Title */}
                 <div className="absolute bottom-0 left-0 right-0 pb-10 z-10">
                     <div className="container-main flex items-end justify-between">
@@ -77,15 +91,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                             <p className="text-zinc-400 max-w-2xl">{event.description}</p>
                         </div>
 
-                        {/* Desktop Logo */}
-                        <div className="hidden lg:block relative w-48 h-48 opacity-20 hover:opacity-100 transition-opacity duration-500">
-                            <Image
-                                src={event.image}
-                                alt="Event Logo"
-                                fill
-                                className="object-contain rounded-xl"
-                            />
-                        </div>
+                        {/* Desktop Logo Removed from here */}
                     </div>
                 </div>
             </section>

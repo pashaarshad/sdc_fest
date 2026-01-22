@@ -32,10 +32,10 @@ export default function EventCard({
     fee,
 }: EventCardProps) {
     const categoryConfig = {
-        it: { label: "IT", badge: "bg-blue-500/10 text-blue-500 border-blue-500/20", color: "#3b82f6" },
-        management: { label: "Management", badge: "bg-purple-500/10 text-purple-500 border-purple-500/20", color: "#a855f7" },
-        cultural: { label: "Cultural", badge: "bg-pink-500/10 text-pink-500 border-pink-500/20", color: "#ec4899" },
-        sports: { label: "Sports", badge: "bg-green-500/10 text-green-500 border-green-500/20", color: "#22c55e" },
+        it: { label: "IT", badge: "bg-black/90 text-white border-white/20", color: "#3b82f6" },
+        management: { label: "Management", badge: "bg-black/90 text-white border-white/20", color: "#a855f7" },
+        cultural: { label: "Cultural", badge: "bg-black/90 text-white border-white/20", color: "#ec4899" },
+        sports: { label: "Sports", badge: "bg-black/90 text-white border-white/20", color: "#22c55e" },
     };
 
     const config = categoryConfig[category];
@@ -53,17 +53,17 @@ export default function EventCard({
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                     {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f13] via-[#0f0f13]/50 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f13] via-transparent to-transparent opacity-60" />
 
                     {/* Category Badge */}
                     <div className="absolute top-4 left-4">
-                        <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-md ${config.badge}`}>
+                        <span className={`inline-flex items-center justify-center px-6 py-2 rounded-full text-xs font-bold border backdrop-blur-md tracking-widest uppercase ${config.badge}`}>
                             {config.label}
                         </span>
                     </div>
                 </div>
 
-                <div className="p-8 flex flex-col flex-grow -mt-6 relative z-10">
+                <div className="p-8 flex flex-col flex-grow relative z-10">
                     {/* Title */}
                     <h3 className="text-xl font-bold text-white mb-1 group-hover:text-[#d4a843] transition-colors leading-tight">
                         {title}
