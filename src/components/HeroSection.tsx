@@ -117,6 +117,7 @@ export default function HeroSection() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.5 }}
                         className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                        style={{ marginTop: '3%' }}
                     >
                         <Link href="#events" className="btn btn-primary flex items-center gap-2 group px-8 py-3.5">
                             Explore Events
