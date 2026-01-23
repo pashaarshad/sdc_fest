@@ -168,7 +168,7 @@ export const itEvents: Event[] = [
         date: "Feb 17, 2026",
         time: "8:30 AM",
         venue: "SDC Campus",
-        image: "/chhaya yuddha_SN.png",
+        image: "/nidhi_anveshanam_final.png",
         rules: [
             "Team of 4 members",
             "College ID is mandatory",
