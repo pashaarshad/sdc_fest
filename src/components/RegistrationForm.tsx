@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { signInWithPopup, signOut, User } from "firebase/auth";
-import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
 import { auth, db, googleProvider, GOOGLE_SHEETS_URL, UPI_ID, UPI_NAME } from "@/lib/firebase";
 import { QRCodeSVG } from "qrcode.react";
-import { X, Users, Phone, Mail, Building, CreditCard, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 interface RegistrationFormProps {
     eventId: string;
@@ -44,20 +42,18 @@ export default function RegistrationForm({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [teamNumber, setTeamNumber] = useState<number | null>(null);
-    const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+    const [timeLeft, setTimeLeft] = useState(300);
 
-    // Parse team size to determine number of members
     const getRequiredMembers = (): number => {
         if (teamSize.includes("8 + 2") || teamSize.includes("8+2")) return 10;
         if (teamSize.includes("4")) return 4;
         if (teamSize.includes("2")) return 2;
         if (teamSize.includes("Solo") || teamSize.includes("1") || teamSize.includes("Individual")) return 1;
-        return 2; // Default
+        return 2;
     };
 
     const requiredMembers = getRequiredMembers();
 
-    // Parse fee amount
     const getFeeAmount = (): string => {
         const match = registrationFee.match(/₹?(\d+)/);
         return match ? match[1] : "0";
@@ -65,7 +61,6 @@ export default function RegistrationForm({
 
     const feeAmount = getFeeAmount();
 
-    // Initialize members array based on team size
     useEffect(() => {
         const initialMembers: Member[] = [];
         for (let i = 0; i < requiredMembers; i++) {
@@ -74,7 +69,6 @@ export default function RegistrationForm({
         setMembers(initialMembers);
     }, [requiredMembers]);
 
-    // Timer countdown for payment
     useEffect(() => {
         if (step === "payment" && timeLeft > 0) {
             const timer = setInterval(() => {
@@ -84,14 +78,12 @@ export default function RegistrationForm({
         }
     }, [step, timeLeft]);
 
-    // Format time for display
     const formatTime = (seconds: number): string => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, "0")}`;
     };
 
-    // Google Sign In
     const handleGoogleSignIn = async () => {
         try {
             setLoading(true);
@@ -106,14 +98,12 @@ export default function RegistrationForm({
         }
     };
 
-    // Update member data
     const updateMember = (index: number, field: keyof Member, value: string) => {
         const updated = [...members];
         updated[index][field] = value;
         setMembers(updated);
     };
 
-    // Validate form
     const validateForm = (): boolean => {
         if (!collegeName.trim()) {
             setError("Please enter your college name");
@@ -132,21 +122,18 @@ export default function RegistrationForm({
         return true;
     };
 
-    // Proceed to payment
     const handleProceedToPayment = () => {
         setError("");
         if (validateForm()) {
-            setTimeLeft(300); // Reset timer
+            setTimeLeft(300);
             setStep("payment");
         }
     };
 
-    // Handle payment done
     const handlePaymentDone = () => {
         setStep("transaction");
     };
 
-    // Submit registration
     const handleSubmit = async () => {
         if (!transactionId.trim()) {
             setError("Please enter the UPI Transaction ID");
@@ -157,12 +144,10 @@ export default function RegistrationForm({
             setLoading(true);
             setError("");
 
-            // Get next team number
             const registrationsRef = collection(db, "registrations", eventId, "teams");
             const snapshot = await getDocs(registrationsRef);
             const nextTeamNumber = snapshot.size + 1;
 
-            // Prepare registration data
             const registrationData = {
                 teamNumber: nextTeamNumber,
                 eventId,
@@ -178,25 +163,17 @@ export default function RegistrationForm({
                 userId: user?.uid || ""
             };
 
-            // Save to Firebase
             await addDoc(registrationsRef, registrationData);
 
-            // Save to Google Sheets
             try {
                 await fetch(GOOGLE_SHEETS_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        ...registrationData,
-                        registeredAt: new Date().toISOString()
-                    }),
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ ...registrationData, registeredAt: new Date().toISOString() }),
                 });
             } catch (sheetError) {
                 console.error("Google Sheets sync failed:", sheetError);
-                // Continue even if Sheets sync fails
             }
 
             setTeamNumber(nextTeamNumber);
@@ -210,7 +187,6 @@ export default function RegistrationForm({
         }
     };
 
-    // Close and reset
     const handleClose = () => {
         setStep("auth");
         setCollegeName("");
@@ -224,70 +200,635 @@ export default function RegistrationForm({
         onClose();
     };
 
-    // UPI Payment URL
     const upiUrl = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${feeAmount}&cu=INR&tn=${encodeURIComponent(`SHRESHTA 2026 - ${eventName}`)}`;
+
+    // Payment app deep links
+    const paymentApps = [
+        { name: "Google Pay", icon: "https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg", url: `gpay://upi/pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${feeAmount}&cu=INR` },
+        { name: "PhonePe", icon: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg", url: `phonepe://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${feeAmount}&cu=INR` },
+        { name: "Paytm", icon: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", url: `paytmmp://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${feeAmount}&cu=INR` },
+    ];
 
     if (!isOpen) return null;
 
     return (
-        <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-                onClick={handleClose}
-            >
-                <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.9, opacity: 0 }}
-                    className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#141418] border border-white/10 rounded-2xl shadow-2xl"
-                    onClick={(e) => e.stopPropagation()}
-                >
+        <>
+            <style jsx>{`
+                .registration-overlay {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                    background: rgba(0, 0, 0, 0.9);
+                    backdrop-filter: blur(10px);
+                    animation: fadeIn 0.3s ease;
+                }
+
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
+                }
+
+                .registration-modal {
+                    width: 100%;
+                    max-width: 600px;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    background: linear-gradient(180deg, #1a1a1f 0%, #141418 100%);
+                    border: 1px solid rgba(212, 168, 67, 0.2);
+                    border-radius: 24px;
+                    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+                    animation: slideUp 0.4s ease;
+                }
+
+                .registration-modal::-webkit-scrollbar {
+                    width: 6px;
+                }
+
+                .registration-modal::-webkit-scrollbar-thumb {
+                    background: #d4a843;
+                    border-radius: 3px;
+                }
+
+                .modal-header {
+                    position: sticky;
+                    top: 0;
+                    z-index: 10;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 24px 28px;
+                    background: linear-gradient(180deg, #1a1a1f 0%, rgba(26, 26, 31, 0.95) 100%);
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                    backdrop-filter: blur(10px);
+                }
+
+                .modal-title {
+                    font-size: 22px;
+                    font-weight: 700;
+                    color: #fff;
+                    margin: 0;
+                }
+
+                .modal-subtitle {
+                    font-size: 14px;
+                    color: #d4a843;
+                    margin: 4px 0 0 0;
+                    font-weight: 500;
+                }
+
+                .close-btn {
+                    width: 44px;
+                    height: 44px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .close-btn:hover {
+                    background: rgba(239, 68, 68, 0.2);
+                    border-color: rgba(239, 68, 68, 0.5);
+                }
+
+                .close-btn svg {
+                    width: 20px;
+                    height: 20px;
+                    color: #a1a1aa;
+                }
+
+                .modal-body {
+                    padding: 28px;
+                }
+
+                .error-box {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 16px;
+                    margin-bottom: 24px;
+                    background: rgba(239, 68, 68, 0.1);
+                    border: 1px solid rgba(239, 68, 68, 0.3);
+                    border-radius: 12px;
+                    color: #fca5a5;
+                    font-size: 14px;
+                }
+
+                .auth-container {
+                    text-align: center;
+                    padding: 40px 20px;
+                }
+
+                .auth-icon {
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto 24px;
+                    background: linear-gradient(135deg, rgba(212, 168, 67, 0.2) 0%, rgba(212, 168, 67, 0.05) 100%);
+                    border: 1px solid rgba(212, 168, 67, 0.3);
+                    border-radius: 24px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .auth-title {
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #fff;
+                    margin: 0 0 8px 0;
+                }
+
+                .auth-subtitle {
+                    font-size: 15px;
+                    color: #71717a;
+                    margin: 0 0 32px 0;
+                    line-height: 1.6;
+                }
+
+                .google-btn {
+                    width: 100%;
+                    padding: 16px 24px;
+                    background: #fff;
+                    border: none;
+                    border-radius: 14px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #000;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    transition: all 0.2s ease;
+                }
+
+                .google-btn:hover {
+                    background: #f5f5f5;
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+                }
+
+                .google-btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+
+                .form-group {
+                    margin-bottom: 20px;
+                }
+
+                .form-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #a1a1aa;
+                    margin-bottom: 10px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+                .form-input {
+                    width: 100%;
+                    padding: 16px 18px;
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 14px;
+                    font-size: 16px;
+                    color: #fff;
+                    outline: none;
+                    transition: all 0.2s ease;
+                }
+
+                .form-input:focus {
+                    border-color: rgba(212, 168, 67, 0.5);
+                    background: rgba(255, 255, 255, 0.05);
+                    box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+                }
+
+                .form-input::placeholder {
+                    color: #52525b;
+                }
+
+                .form-input[readonly] {
+                    background: rgba(255, 255, 255, 0.02);
+                    color: #71717a;
+                }
+
+                .members-section {
+                    margin: 24px 0;
+                }
+
+                .members-title {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #a1a1aa;
+                    margin-bottom: 16px;
+                }
+
+                .member-card {
+                    padding: 20px;
+                    background: rgba(0, 0, 0, 0.3);
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    border-radius: 16px;
+                    margin-bottom: 12px;
+                }
+
+                .member-header {
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: #d4a843;
+                    margin-bottom: 14px;
+                }
+
+                .member-inputs {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                .member-input {
+                    width: 100%;
+                    padding: 14px 16px;
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    border-radius: 10px;
+                    font-size: 15px;
+                    color: #fff;
+                    outline: none;
+                    transition: all 0.2s ease;
+                }
+
+                .member-input:focus {
+                    border-color: rgba(212, 168, 67, 0.4);
+                    background: rgba(255, 255, 255, 0.05);
+                }
+
+                .fee-box {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 20px 24px;
+                    background: linear-gradient(135deg, rgba(212, 168, 67, 0.15) 0%, rgba(212, 168, 67, 0.05) 100%);
+                    border: 1px solid rgba(212, 168, 67, 0.3);
+                    border-radius: 16px;
+                    margin: 24px 0;
+                }
+
+                .fee-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-size: 15px;
+                    color: #a1a1aa;
+                }
+
+                .fee-amount {
+                    font-size: 24px;
+                    font-weight: 800;
+                    color: #d4a843;
+                }
+
+                .primary-btn {
+                    width: 100%;
+                    padding: 18px 24px;
+                    background: linear-gradient(135deg, #d4a843 0%, #b8922e 100%);
+                    border: none;
+                    border-radius: 14px;
+                    font-size: 17px;
+                    font-weight: 700;
+                    color: #000;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    transition: all 0.3s ease;
+                }
+
+                .primary-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 12px 35px rgba(212, 168, 67, 0.4);
+                }
+
+                .primary-btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+
+                .payment-container {
+                    text-align: center;
+                    padding: 20px 0;
+                }
+
+                .payment-title {
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: #fff;
+                    margin: 0 0 8px 0;
+                }
+
+                .payment-amount {
+                    font-size: 32px;
+                    font-weight: 800;
+                    color: #d4a843;
+                    margin: 0 0 24px 0;
+                }
+
+                .qr-container {
+                    display: inline-block;
+                    padding: 20px;
+                    background: #fff;
+                    border-radius: 20px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+                }
+
+                .upi-id-box {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 12px 20px;
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                }
+
+                .upi-label {
+                    font-size: 13px;
+                    color: #71717a;
+                }
+
+                .upi-value {
+                    font-size: 15px;
+                    font-weight: 600;
+                    color: #fff;
+                    font-family: monospace;
+                }
+
+                .timer-box {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 14px 24px;
+                    background: rgba(255, 255, 255, 0.05);
+                    border-radius: 50px;
+                    margin-bottom: 24px;
+                }
+
+                .timer-box.warning {
+                    background: rgba(239, 68, 68, 0.2);
+                }
+
+                .timer-value {
+                    font-size: 20px;
+                    font-weight: 700;
+                    font-family: monospace;
+                    color: #fff;
+                }
+
+                .timer-label {
+                    font-size: 13px;
+                    color: #a1a1aa;
+                }
+
+                .payment-apps {
+                    display: flex;
+                    justify-content: center;
+                    gap: 16px;
+                    margin: 24px 0;
+                    flex-wrap: wrap;
+                }
+
+                .payment-app-btn {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 16px 24px;
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 14px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    text-decoration: none;
+                    min-width: 100px;
+                }
+
+                .payment-app-btn:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-color: rgba(212, 168, 67, 0.5);
+                    transform: translateY(-3px);
+                }
+
+                .payment-app-icon {
+                    width: 40px;
+                    height: 40px;
+                    object-fit: contain;
+                }
+
+                .payment-app-name {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: #a1a1aa;
+                }
+
+                .success-btn {
+                    width: 100%;
+                    padding: 18px 24px;
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    border: none;
+                    border-radius: 14px;
+                    font-size: 17px;
+                    font-weight: 700;
+                    color: #fff;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    transition: all 0.3s ease;
+                }
+
+                .success-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4);
+                }
+
+                .transaction-container {
+                    text-align: center;
+                    padding: 20px 0;
+                }
+
+                .success-icon {
+                    width: 70px;
+                    height: 70px;
+                    margin: 0 auto 20px;
+                    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 100%);
+                    border: 2px solid rgba(16, 185, 129, 0.4);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .success-container {
+                    text-align: center;
+                    padding: 40px 20px;
+                }
+
+                .success-container .success-icon {
+                    width: 100px;
+                    height: 100px;
+                    margin-bottom: 24px;
+                }
+
+                .success-title {
+                    font-size: 28px;
+                    font-weight: 800;
+                    color: #fff;
+                    margin: 0 0 12px 0;
+                }
+
+                .success-team {
+                    font-size: 18px;
+                    color: #a1a1aa;
+                    margin: 0 0 8px 0;
+                }
+
+                .team-number {
+                    color: #d4a843;
+                    font-weight: 700;
+                }
+
+                .success-event {
+                    font-size: 14px;
+                    color: #71717a;
+                    margin: 0 0 32px 0;
+                }
+
+                .secondary-btn {
+                    width: 100%;
+                    padding: 16px 24px;
+                    background: rgba(255, 255, 255, 0.08);
+                    border: 1px solid rgba(255, 255, 255, 0.15);
+                    border-radius: 14px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #fff;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .secondary-btn:hover {
+                    background: rgba(255, 255, 255, 0.12);
+                    border-color: rgba(255, 255, 255, 0.25);
+                }
+
+                .spinner {
+                    width: 22px;
+                    height: 22px;
+                    border: 3px solid rgba(0, 0, 0, 0.2);
+                    border-top-color: #000;
+                    border-radius: 50%;
+                    animation: spin 0.8s linear infinite;
+                }
+
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+
+                .transaction-input {
+                    width: 100%;
+                    padding: 18px 20px;
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 2px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 14px;
+                    font-size: 18px;
+                    font-family: monospace;
+                    color: #fff;
+                    outline: none;
+                    text-align: center;
+                    letter-spacing: 2px;
+                    margin: 20px 0;
+                    transition: all 0.2s ease;
+                }
+
+                .transaction-input:focus {
+                    border-color: rgba(212, 168, 67, 0.5);
+                    box-shadow: 0 0 0 4px rgba(212, 168, 67, 0.1);
+                }
+
+                .transaction-hint {
+                    font-size: 13px;
+                    color: #71717a;
+                    margin-bottom: 24px;
+                }
+            `}</style>
+
+            <div className="registration-overlay">
+                <div className="registration-modal">
                     {/* Header */}
-                    <div className="sticky top-0 z-10 flex items-center justify-between p-6 bg-[#141418] border-b border-white/10">
+                    <div className="modal-header">
                         <div>
-                            <h2 className="text-xl font-bold text-white">Register for Event</h2>
-                            <p className="text-sm text-zinc-400">{eventName}</p>
+                            <h2 className="modal-title">Event Registration</h2>
+                            <p className="modal-subtitle">{eventName}</p>
                         </div>
-                        <button
-                            onClick={handleClose}
-                            className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                        >
-                            <X className="w-5 h-5 text-zinc-400" />
+                        <button className="close-btn" onClick={handleClose}>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
                         </button>
                     </div>
 
-                    <div className="p-6">
-                        {/* Error Message */}
+                    <div className="modal-body">
+                        {/* Error */}
                         {error && (
-                            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2 text-red-400 text-sm">
-                                <AlertCircle className="w-4 h-4 shrink-0" />
+                            <div className="error-box">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
                                 {error}
                             </div>
                         )}
 
-                        {/* Step 1: Google Auth */}
+                        {/* Step 1: Auth */}
                         {step === "auth" && (
-                            <div className="text-center py-8">
-                                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#d4a843]/10 flex items-center justify-center">
-                                    <Mail className="w-10 h-10 text-[#d4a843]" />
+                            <div className="auth-container">
+                                <div className="auth-icon">
+                                    <svg width="40" height="40" fill="none" stroke="#d4a843" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
                                 </div>
-                                <h3 className="text-lg font-semibold text-white mb-2">Sign in to Register</h3>
-                                <p className="text-zinc-400 text-sm mb-8">
-                                    Sign in with your Google account to continue registration
+                                <h3 className="auth-title">Sign in to Register</h3>
+                                <p className="auth-subtitle">
+                                    Sign in with your Google account to continue with the event registration
                                 </p>
-                                <button
-                                    onClick={handleGoogleSignIn}
-                                    disabled={loading}
-                                    className="w-full py-3 px-4 bg-white text-black font-semibold rounded-xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
-                                >
+                                <button className="google-btn" onClick={handleGoogleSignIn} disabled={loading}>
                                     {loading ? (
-                                        <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                                        <div className="spinner" />
                                     ) : (
                                         <>
-                                            <svg className="w-5 h-5" viewBox="0 0 24 24">
+                                            <svg width="22" height="22" viewBox="0 0 24 24">
                                                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                                                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                                                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
@@ -300,132 +841,130 @@ export default function RegistrationForm({
                             </div>
                         )}
 
-                        {/* Step 2: Registration Form */}
+                        {/* Step 2: Form */}
                         {step === "form" && (
-                            <div className="space-y-5">
-                                {/* User Email (Read-only) */}
-                                <div>
-                                    <label className="block text-sm font-medium text-zinc-400 mb-2">
-                                        <Mail className="w-4 h-4 inline mr-2" />
+                            <div>
+                                <div className="form-group">
+                                    <label className="form-label">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
                                         Email (from Google)
                                     </label>
-                                    <input
-                                        type="email"
-                                        value={user?.email || ""}
-                                        readOnly
-                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none"
-                                    />
+                                    <input type="email" className="form-input" value={user?.email || ""} readOnly />
                                 </div>
 
-                                {/* College Name */}
-                                <div>
-                                    <label className="block text-sm font-medium text-zinc-400 mb-2">
-                                        <Building className="w-4 h-4 inline mr-2" />
+                                <div className="form-group">
+                                    <label className="form-label">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
                                         College Name *
                                     </label>
                                     <input
                                         type="text"
+                                        className="form-input"
                                         value={collegeName}
                                         onChange={(e) => setCollegeName(e.target.value)}
                                         placeholder="Enter your college name"
-                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-[#d4a843]/50"
                                     />
                                 </div>
 
-                                {/* Team Members */}
-                                <div className="space-y-4">
-                                    <h4 className="text-sm font-medium text-zinc-400 flex items-center gap-2">
-                                        <Users className="w-4 h-4" />
+                                <div className="members-section">
+                                    <div className="members-title">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
                                         Team Members ({requiredMembers} required)
-                                    </h4>
+                                    </div>
                                     {members.map((member, index) => (
-                                        <div key={index} className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3">
-                                            <h5 className="text-sm font-semibold text-[#d4a843]">Member {index + 1}</h5>
-                                            <input
-                                                type="text"
-                                                value={member.name}
-                                                onChange={(e) => updateMember(index, "name", e.target.value)}
-                                                placeholder="Full Name"
-                                                className="w-full px-4 py-2.5 bg-black/30 border border-white/10 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-[#d4a843]/50"
-                                            />
-                                            <input
-                                                type="tel"
-                                                value={member.phone}
-                                                onChange={(e) => updateMember(index, "phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
-                                                placeholder="Phone Number"
-                                                className="w-full px-4 py-2.5 bg-black/30 border border-white/10 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-[#d4a843]/50"
-                                            />
+                                        <div key={index} className="member-card">
+                                            <div className="member-header">Member {index + 1}</div>
+                                            <div className="member-inputs">
+                                                <input
+                                                    type="text"
+                                                    className="member-input"
+                                                    value={member.name}
+                                                    onChange={(e) => updateMember(index, "name", e.target.value)}
+                                                    placeholder="Full Name"
+                                                />
+                                                <input
+                                                    type="tel"
+                                                    className="member-input"
+                                                    value={member.phone}
+                                                    onChange={(e) => updateMember(index, "phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
+                                                    placeholder="Phone Number"
+                                                />
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
 
-                                {/* Entry Fee Display */}
-                                <div className="p-4 bg-[#d4a843]/10 border border-[#d4a843]/30 rounded-xl">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-zinc-400 flex items-center gap-2">
-                                            <CreditCard className="w-4 h-4" />
-                                            Entry Fee
-                                        </span>
-                                        <span className="text-xl font-bold text-[#d4a843]">{registrationFee}</span>
-                                    </div>
+                                <div className="fee-box">
+                                    <span className="fee-label">
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        Entry Fee
+                                    </span>
+                                    <span className="fee-amount">{registrationFee}</span>
                                 </div>
 
-                                {/* Continue Button */}
-                                <button
-                                    onClick={handleProceedToPayment}
-                                    className="w-full py-3 bg-[#d4a843] text-black font-semibold rounded-xl hover:bg-[#e5b854] transition-colors"
-                                >
-                                    Continue to Payment →
+                                <button className="primary-btn" onClick={handleProceedToPayment}>
+                                    Continue to Payment
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
                                 </button>
                             </div>
                         )}
 
-                        {/* Step 3: Payment QR Code */}
+                        {/* Step 3: Payment */}
                         {step === "payment" && (
-                            <div className="text-center py-4">
-                                <h3 className="text-lg font-semibold text-white mb-2">Scan QR Code to Pay</h3>
-                                <p className="text-zinc-400 text-sm mb-6">
-                                    Amount: <span className="text-[#d4a843] font-bold text-lg">₹{feeAmount}</span>
-                                </p>
+                            <div className="payment-container">
+                                <h3 className="payment-title">Scan QR Code to Pay</h3>
+                                <p className="payment-amount">₹{feeAmount}</p>
 
-                                {/* QR Code */}
-                                <div className="inline-block p-4 bg-white rounded-2xl mb-6">
-                                    <QRCodeSVG
-                                        value={upiUrl}
-                                        size={200}
-                                        level="H"
-                                        includeMargin={true}
-                                    />
+                                <div className="qr-container">
+                                    <QRCodeSVG value={upiUrl} size={220} level="H" includeMargin={true} />
                                 </div>
 
-                                {/* UPI ID */}
-                                <p className="text-zinc-400 text-sm mb-4">
-                                    UPI ID: <span className="text-white font-mono">{UPI_ID}</span>
-                                </p>
+                                <div className="upi-id-box">
+                                    <span className="upi-label">UPI ID:</span>
+                                    <span className="upi-value">{UPI_ID}</span>
+                                </div>
 
-                                {/* Timer */}
-                                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 ${timeLeft < 60 ? 'bg-red-500/20 text-red-400' : 'bg-white/10 text-zinc-300'}`}>
-                                    <Clock className="w-4 h-4" />
-                                    <span className="font-mono font-semibold">{formatTime(timeLeft)}</span>
-                                    <span className="text-sm">remaining</span>
+                                <div className={`timer-box ${timeLeft < 60 ? 'warning' : ''}`}>
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span className="timer-value">{formatTime(timeLeft)}</span>
+                                    <span className="timer-label">remaining</span>
+                                </div>
+
+                                {/* Payment App Buttons */}
+                                <div className="payment-apps">
+                                    {paymentApps.map((app) => (
+                                        <a key={app.name} href={app.url} className="payment-app-btn">
+                                            <img src={app.icon} alt={app.name} className="payment-app-icon" />
+                                            <span className="payment-app-name">{app.name}</span>
+                                        </a>
+                                    ))}
                                 </div>
 
                                 {timeLeft === 0 ? (
-                                    <div className="text-red-400 mb-4">
-                                        <p>Payment time expired. Please try again.</p>
-                                        <button
-                                            onClick={() => setTimeLeft(300)}
-                                            className="mt-2 text-[#d4a843] underline"
-                                        >
+                                    <div style={{ color: '#fca5a5', marginBottom: '16px' }}>
+                                        <p>Payment time expired.</p>
+                                        <button onClick={() => setTimeLeft(300)} style={{ color: '#d4a843', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
                                             Restart Timer
                                         </button>
                                     </div>
                                 ) : (
-                                    <button
-                                        onClick={handlePaymentDone}
-                                        className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-500 transition-colors"
-                                    >
-                                        I have completed the payment ✓
+                                    <button className="success-btn" onClick={handlePaymentDone}>
+                                        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        I have completed the payment
                                     </button>
                                 )}
                             </div>
@@ -433,71 +972,49 @@ export default function RegistrationForm({
 
                         {/* Step 4: Transaction ID */}
                         {step === "transaction" && (
-                            <div className="py-4">
-                                <div className="text-center mb-6">
-                                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                        <CheckCircle className="w-8 h-8 text-emerald-500" />
-                                    </div>
-                                    <h3 className="text-lg font-semibold text-white">Payment Confirmation</h3>
-                                    <p className="text-zinc-400 text-sm">Enter your UPI Transaction ID to complete registration</p>
+                            <div className="transaction-container">
+                                <div className="success-icon">
+                                    <svg width="36" height="36" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
                                 </div>
+                                <h3 className="payment-title">Payment Confirmation</h3>
+                                <p style={{ color: '#71717a', marginBottom: '24px' }}>Enter your UPI Transaction ID to complete registration</p>
 
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-zinc-400 mb-2">
-                                            UPI Transaction ID / Reference Number *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={transactionId}
-                                            onChange={(e) => setTransactionId(e.target.value)}
-                                            placeholder="e.g., 123456789012"
-                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-[#d4a843]/50 font-mono"
-                                        />
-                                        <p className="text-xs text-zinc-500 mt-2">
-                                            You can find this in your UPI app&apos;s transaction history
-                                        </p>
-                                    </div>
+                                <input
+                                    type="text"
+                                    className="transaction-input"
+                                    value={transactionId}
+                                    onChange={(e) => setTransactionId(e.target.value)}
+                                    placeholder="Enter Transaction ID"
+                                />
+                                <p className="transaction-hint">You can find this in your UPI app&apos;s transaction history</p>
 
-                                    <button
-                                        onClick={handleSubmit}
-                                        disabled={loading}
-                                        className="w-full py-3 bg-[#d4a843] text-black font-semibold rounded-xl hover:bg-[#e5b854] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                                    >
-                                        {loading ? (
-                                            <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                                        ) : (
-                                            "Submit Registration"
-                                        )}
-                                    </button>
-                                </div>
+                                <button className="primary-btn" onClick={handleSubmit} disabled={loading}>
+                                    {loading ? <div className="spinner" style={{ borderColor: 'rgba(0,0,0,0.2)', borderTopColor: '#000' }} /> : "Submit Registration"}
+                                </button>
                             </div>
                         )}
 
                         {/* Step 5: Success */}
                         {step === "success" && (
-                            <div className="text-center py-8">
-                                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                    <CheckCircle className="w-12 h-12 text-emerald-500" />
+                            <div className="success-container">
+                                <div className="success-icon">
+                                    <svg width="50" height="50" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
                                 </div>
-                                <h3 className="text-2xl font-bold text-white mb-2">Registration Successful!</h3>
-                                <p className="text-zinc-400 mb-4">
-                                    You are registered as <span className="text-[#d4a843] font-bold">Team #{teamNumber}</span>
+                                <h3 className="success-title">Registration Successful!</h3>
+                                <p className="success-team">
+                                    You are registered as <span className="team-number">Team #{teamNumber}</span>
                                 </p>
-                                <p className="text-sm text-zinc-500 mb-6">
-                                    for {eventName}
-                                </p>
-                                <button
-                                    onClick={handleClose}
-                                    className="w-full py-3 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-colors"
-                                >
-                                    Close
-                                </button>
+                                <p className="success-event">for {eventName}</p>
+                                <button className="secondary-btn" onClick={handleClose}>Close</button>
                             </div>
                         )}
                     </div>
-                </motion.div>
-            </motion.div>
-        </AnimatePresence>
+                </div>
+            </div>
+        </>
     );
 }
