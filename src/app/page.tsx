@@ -104,9 +104,12 @@ export default function Home() {
                 <span className="text-gold-gradient ml-3">Compete?</span>
               </h2>
 
-              <p className="text-zinc-400 max-w-xl mx-auto mb-8">
-                Register now and secure your spot at the biggest intercollegiate fest of 2026
-              </p>
+              <center>
+                <p className="text-zinc-300 text-lg max-w-xl mx-auto mb-8 font-medium">
+                  Choose your favorite event and register now! Showcase your talent at the biggest intercollegiate fest of 2026.
+                </p>
+              </center>
+              <br />
 
               {/* Benefits */}
               <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mb-10 text-sm text-zinc-400">
@@ -124,20 +127,28 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+              <br />
 
               {/* CTA */}
-              <div className="mb-6">
-                <a href={`tel:${collegeInfo.phone.replace(/\s/g, '')}`} className="btn btn-primary text-lg px-10 py-4">
-                  Register Now
+              <div className="mb-8">
+                <Link href="#events" className="btn btn-primary text-lg px-10 py-4 shadow-xl shadow-[#d4a843]/20 hover:shadow-[#d4a843]/40 transform hover:-translate-y-1 transition-all duration-300">
+                  Explore Events
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                   </svg>
-                </a>
+                </Link>
               </div>
-
-              <p className="text-sm text-zinc-600">
-                Last date for registration: <span className="text-zinc-400">February 15, 2026</span>
-              </p>
+              <br />
+              <div className="inline-block bg-white/5 border border-white/10 rounded-xl px-6 py-3 backdrop-blur-sm">
+                <p className="text-sm text-zinc-400 mb-1">Last Date for Registration</p>
+                <p>&nbsp;</p>
+                <p className="text-xl font-bold text-white flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5 text-[#d4a843]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  February 15, 2026
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -173,8 +184,8 @@ export default function Home() {
             </div>
 
             {/* Right - Contact Cards */}
-            <div className="space-y-4">
-              <div className="card-static p-6">
+            <div className="space-y-4" >
+              <div className="card-static p-6" style={{ padding: '1.7rem' }}>
                 <h3 className="text-sm font-semibold text-[#d4a843] uppercase tracking-wider mb-4">Faculty Coordinators</h3>
                 <div className="space-y-4">
                   {facultyCoordinators.map((coord) => (
@@ -187,9 +198,9 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-
-              <div className="card-static p-6">
-                <h3 className="text-sm font-semibold text-[#d4a843] uppercase tracking-wider mb-4">Contact</h3>
+              <br />
+              <div className="card-static p-6" style={{ padding: '1.7rem' }}>
+                <h3 className="text-sm font-semibold text-[#d4a843] uppercase tracking-wider mb-4" style={{ padding: '0.3rem' }}>Contact</h3>
                 <div className="space-y-3">
                   <a href={collegeInfo.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +219,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section >
     </>
   );
 }
