@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getEventById, allEvents, collegeInfo } from "@/data/events";
+import { getEventById, allEvents } from "@/data/events";
+import EventPageClient, { EventTeamsSection } from "@/components/EventPageClient";
 
 export function generateStaticParams() {
     return allEvents.map((event) => ({ id: event.id }));
@@ -141,6 +142,9 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                                 ))}
                             </ul>
                         </div>
+
+                        {/* Registered Teams */}
+                        <EventTeamsSection eventId={event.id} eventName={event.title} />
                     </div>
 
                     {/* Sidebar */}
@@ -173,17 +177,14 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                                 ))}
                             </div>
 
-                            <a
-                                href="https://forms.gle/kF5N6KJJ27dazTwR7"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-primary w-full py-4 text-base shadow-lg shadow-[#d4a843]/20 hover:shadow-[#d4a843]/40"
-                            >
-                                Register Now
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                </svg>
-                            </a>
+                            {/* Client-side Registration Button */}
+                            <EventPageClient
+                                eventId={event.id}
+                                eventName={event.title}
+                                category={event.category}
+                                teamSize={event.teamSize}
+                                registrationFee={event.registrationFee}
+                            />
                         </div>
 
                         {/* Coordinator Card */}
