@@ -33,7 +33,8 @@ const scheduleData = [
 
 const ScheduleSection = () => {
     return (
-        <section id="schedule" className="py-24 md:py-32 relative overflow-hidden bg-[#0a0a0c]">
+      <center>
+          <section id="schedule" className="py-24 md:py-32 relative overflow-hidden bg-[#0a0a0c]">
             {/* Decorative Background Elements */}
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#d4a843]/5 rounded-full blur-[120px]" />
@@ -58,9 +59,11 @@ const ScheduleSection = () => {
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white mb-6">
                         Event <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4a843] via-[#e8c468] to-[#d4a843]">Schedule</span>
                     </h2>
-                    <p className="text-zinc-400 max-w-xl mx-auto text-lg">
+                   <center>
+                     <p className="text-zinc-400 max-w-xl mx-auto text-lg text-center w-full">
                         {eventInfo.date}, {eventInfo.day} • {eventInfo.time}
                     </p>
+                   </center>
                 </motion.div>
 
                 {/* Main Content Grid - Centered */}
@@ -196,6 +199,7 @@ const ScheduleSection = () => {
                 </div>
             </div>
         </section>
+      </center>
     );
 };
 
