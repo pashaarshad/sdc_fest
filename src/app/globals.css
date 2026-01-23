@@ -327,15 +327,28 @@ h4 {
   grid-template-columns: repeat(1, 1fr);
 }
 
+.grid-events>* {
+  height: 100%;
+}
+
 @media (min-width: 640px) {
   .grid-events {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 }
 
 @media (min-width: 1024px) {
   .grid-events {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-events {
     grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
   }
 }
 
