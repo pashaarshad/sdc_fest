@@ -75,7 +75,7 @@ export default function EventCard({
                     </div>
 
                     {/* Content Section - Massive Padding for Professionalism */}
-                    <div className="p-8 md:p-10 flex flex-col flex-grow">
+                    <div className="p-8 md:p-10 flex flex-col flex-grow" style={{ padding: '0.9rem' }}>
                         {/* Title Section */}
                         <div className="mb-6 mt-2">
                             <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-[#d4a843] transition-colors leading-tight tracking-tight">
