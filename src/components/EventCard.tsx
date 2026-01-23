@@ -75,9 +75,9 @@ export default function EventCard({
                     </div>
 
                     {/* Content Section - Massive Padding for Professionalism */}
-                    <div className="p-10 flex flex-col flex-grow">
-                        {/* Title Section - Added 1% Margin */}
-                        <div className="mb-8 m-">
+                    <div className="p-8 md:p-10 flex flex-col flex-grow">
+                        {/* Title Section */}
+                        <div className="mb-6 mt-2">
                             <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-[#d4a843] transition-colors leading-tight tracking-tight">
                                 {title}
                             </h3>
@@ -86,20 +86,20 @@ export default function EventCard({
                             )}
                         </div>
 
-                        {/* Description Section - Added 1% Margin */}
-                        <div className="mb-10 m-1">
+                        {/* Description Section */}
+                        <div className="mb-8">
                             <p className="text-[15px] text-zinc-400 leading-relaxed line-clamp-3">
                                 {description}
                             </p>
                         </div>
 
                         {/* Divider Line */}
-                        <div className="h-px w-full bg-white/[0.05] mb-10" />
+                        <div className="h-px w-full bg-white/[0.08] mb-8" />
 
                         {/* Details - Row Alignment Fixed */}
-                        <div className="space-y-7 mt-auto">
+                        <div className="space-y-5 mt-auto py-2">
                             {/* Team Size */}
-                            <div className="flex items-center gap-5 group/item m-1">
+                            <div className="flex items-center gap-4 group/item py-1">
                                 <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shadow-[0_0_15px_rgba(212,168,67,0.1)] shrink-0">
                                     <Users className="w-5 h-5" />
                                 </div>
@@ -110,7 +110,7 @@ export default function EventCard({
                             </div>
 
                             {/* Entry Fee */}
-                            <div className="flex items-center gap-5 group/item m-1">
+                            <div className="flex items-center gap-4 group/item py-1">
                                 <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shadow-[0_0_15px_rgba(212,168,67,0.1)] shrink-0">
                                     <IndianRupee className="w-5 h-5" />
                                 </div>
@@ -121,7 +121,7 @@ export default function EventCard({
                             </div>
 
                             {/* Coordinator */}
-                            <div className="flex items-center gap-5 group/item m-1">
+                            <div className="flex items-center gap-4 group/item py-1">
                                 <div className="w-12 h-12 rounded-xl bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center text-[#d4a843] shadow-[0_0_15px_rgba(212,168,67,0.1)] shrink-0">
                                     <Phone className="w-5 h-5" />
                                 </div>
