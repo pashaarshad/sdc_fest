@@ -104,7 +104,7 @@ export default function Home() {
 
               {/* Title */}
               <h2 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
-                <span className="text-white">Ready to</span>
+                <span className="text-white">Ready to </span>
                 <span className="text-gold-gradient ml-3">Compete?</span>
               </h2>
 
@@ -138,12 +138,12 @@ export default function Home() {
                 <Link href="#events" className="btn btn-primary text-lg px-10 py-4 shadow-xl shadow-[#d4a843]/20 hover:shadow-[#d4a843]/40 transform hover:-translate-y-1 transition-all duration-300">
                   Explore Events
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 10l-7-7m0 0l-7 7m7-7v18" />
                   </svg>
                 </Link>
               </div>
               <br />
-              <div className="inline-block bg-white/5 border border-white/10 rounded-xl px-6 py-3 backdrop-blur-sm">
+              <div className="inline-block bg-white/5 border border-white/10 rounded-xl px-6 py-3 backdrop-blur-sm" style={{ marginBottom: '3%', padding: '2%' }}>
                 <p className="text-sm text-zinc-400 mb-1">Last Date for Registration</p>
                 <p>&nbsp;</p>
                 <p className="text-xl font-bold text-white flex items-center justify-center gap-2">
