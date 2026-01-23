@@ -33,7 +33,7 @@ const scheduleData = [
 
 const ScheduleSection = () => {
     return (
-        <center>
+        <center style={{ padding: '3rem' }}>
             <section id="schedule" className="py-24 md:py-32 relative overflow-hidden bg-[#0a0a0c]">
                 {/* Decorative Background Elements */}
                 <div className="absolute inset-0">
