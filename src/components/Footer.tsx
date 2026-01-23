@@ -78,18 +78,20 @@ export default function Footer() {
                         </div>
                     </div>
                 </div>
+                <br />
 
                 {/* Bottom Bar */}
-                <div className="border-t border-white/[0.04] mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-xs text-zinc-600">
-                        © {currentYear} SHRESHTA • Seshadripuram Degree College, Mysuru
+                <div className="border-t border-white/[1.0] mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p className="text-xs text-zinc-300">
+                        © {currentYear} <b>SHRESHTA • Seshadripuram Degree College, Mysuru</b>
                     </p>
+                    <br />
 
                 </div>
 
                 {/* Designer Credit */}
-                <div className="mt-8 pt-8 border-t border-white/[0.04] text-center">
-                    <p className="text-zinc-300 text-sm">
+                <div className="mt-8 pt-8 border-t border-white/[3.04] text-center" style={{ paddingTop: '2rem', paddingBottom: '0.2rem' }}>
+                    <p className="text-zinc-100 text-sm">
                         Designed by <a href="https://arshadpasha.tech" target="_blank" rel="noopener noreferrer" className="text-[#d4a843] hover:text-[#e5b854] transition-colors font-bold hover:underline decoration-[#d4a843]/30 underline-offset-4">Arshad Pasha</a>
                     </p>
                 </div>
