@@ -58,7 +58,7 @@ export const managementEvents: Event[] = [
         date: "Feb 17, 2026",
         time: "8:30 AM",
         venue: "SDC Campus",
-        image: "/HR event.jpeg",
+        image: "/hr_logo.jpeg",
         rules: [
             "Team of 2 members",
             "College ID is mandatory",
@@ -168,7 +168,7 @@ export const itEvents: Event[] = [
         date: "Feb 17, 2026",
         time: "8:30 AM",
         venue: "SDC Campus",
-        image: "/Treasure_hunt_SN.png",
+        image: "/chhaya yuddha_SN.png",
         rules: [
             "Team of 4 members",
             "College ID is mandatory",
@@ -256,7 +256,7 @@ export const culturalEvents: Event[] = [
         date: "Feb 17, 2026",
         time: "8:30 AM",
         venue: "Open Air Theatre",
-        image: "/Rampwalk.jpeg",
+        image: "/singin.jpeg",
         rules: [
             "Solo or Group participation",
             "College ID is mandatory",
@@ -302,7 +302,7 @@ export const sportsEvents: Event[] = [
         date: "Feb 17, 2026",
         time: "8:30 AM",
         venue: "College Ground",
-        image: "/DANDASHATAKA.jpeg",
+        image: "/Cricket.jpeg",
         rules: [
             "Team of 8 + 2 players",
             "College ID is mandatory",
