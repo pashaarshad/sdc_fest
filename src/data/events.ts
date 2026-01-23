@@ -235,7 +235,7 @@ export const culturalEvents: Event[] = [
         date: "Feb 17, 2026",
         time: "8:30 AM",
         venue: "Main Stage",
-        image: "/LASYA TANDAVA.jpeg",
+        image: "/sance_solo.jpeg",
         rules: [
             "Individual participation",
             "College ID is mandatory",
