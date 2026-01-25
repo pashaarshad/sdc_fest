@@ -47,9 +47,11 @@ export default function AdminDashboard() {
 
     // Delete Confirmation State
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleteStep, setDeleteStep] = useState<'warning' | 'pin' | 'deleting'>('warning');
+    const [deleteTimer, setDeleteTimer] = useState(5);
     const [deletePin, setDeletePin] = useState("");
     const [deleteError, setDeleteError] = useState("");
-    const [regToDelete, setRegToDelete] = useState<string | null>(null);
+    const [deleteContext, setDeleteContext] = useState<{ id: string, eventId: string, teamNumber: number, eventName: string } | null>(null);
 
     // Details Modal State
     const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
@@ -245,18 +247,48 @@ export default function AdminDashboard() {
     };
 
     // Delete Handlers
-    const handleDeleteRequest = (regId: string) => {
-        if (confirm("Are you sure you want to DELETE this registration? This action cannot be undone.")) {
-            setRegToDelete(regId);
-            setShowDeleteConfirm(true);
-        }
+    const handleDeleteRequest = (reg: Registration) => {
+        setDeleteContext({
+            id: reg.id,
+            eventId: reg.eventId,
+            teamNumber: reg.teamNumber,
+            eventName: reg.eventName
+        });
+        setDeleteStep('warning');
+        setDeleteTimer(5);
+
+        // Close the Edit Modal Immediately so it is not visible behind the delete modal
+        closeModal();
+
+        setShowDeleteConfirm(true);
     };
 
+    // Timer effect for delete warning
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (showDeleteConfirm && deleteStep === 'warning' && deleteTimer > 0) {
+            interval = setInterval(() => {
+                setDeleteTimer(prev => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [showDeleteConfirm, deleteStep, deleteTimer]);
+
     const handleBackdropClick = (e: React.MouseEvent) => {
-        if (e.target === e.currentTarget) {
+        // Only close if clicking the overlay (not the box)
+        // AND not in the middle of deleting
+        if (e.target === e.currentTarget && deleteStep !== 'deleting') {
             setShowDeleteConfirm(false);
             setDeletePin("");
             setDeleteError("");
+            setDeleteStep('warning'); // Reset step
+            setDeleteContext(null); // Reset target
+        }
+    };
+
+    const proceedToPin = () => {
+        if (deleteTimer === 0) {
+            setDeleteStep('pin');
         }
     };
 
@@ -266,27 +298,30 @@ export default function AdminDashboard() {
             return;
         }
 
-        if (regToDelete && editData) {
-            await executeDelete(regToDelete, editData.eventId);
+        if (deleteContext) {
+            await executeDelete(deleteContext.id, deleteContext.eventId);
         }
     };
 
     const executeDelete = async (regId: string, eventId: string) => {
         try {
+            setDeleteStep('deleting');
+            setDeleteError("");
+
             await deleteDoc(doc(db, "registrations", eventId, "teams", regId));
 
             // Clean up states
             setShowDeleteConfirm(false);
             setDeletePin("");
             setDeleteError("");
-            setRegToDelete(null);
-            closeModal(); // Close the edit modal
+            setDeleteContext(null);
 
             // Refresh data
             window.location.reload();
         } catch (error) {
             console.error("Error deleting document:", error);
-            alert("Failed to delete registration.");
+            setDeleteError("Failed to delete registration.");
+            setDeleteStep('pin'); // Go back to PIN screen on error
         }
     };
 
@@ -745,36 +780,85 @@ export default function AdminDashboard() {
                 </div>
             )}
 
-            {/* DELETE PIN Modal */}
+            {/* DELETE Process Modals */}
             {showDeleteConfirm && (
                 <div className="modal-overlay" onClick={handleBackdropClick}>
-                    <div className="modal-box" style={{ maxWidth: '400px', border: '1px solid rgba(239, 68, 68, 0.4)' }}>
-                        <button className="modal-close" onClick={() => { setShowDeleteConfirm(false); setDeletePin(""); }}>×</button>
-                        <h3 className="modal-title" style={{ color: '#fca5a5' }}>⚠️ Confirm Deletion</h3>
-                        <p className="modal-subtitle">Enter PIN to permanently delete this registration.</p>
-                        <input
-                            type="password"
-                            className="pin-input"
-                            value={deletePin}
-                            onChange={(e) => setDeletePin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                            placeholder="••••"
-                            maxLength={4}
-                            autoFocus
-                            style={{ borderColor: 'rgba(239, 68, 68, 0.4)' }}
-                        />
-                        {deleteError && <p className="pin-error">{deleteError}</p>}
-                        <div className="modal-btns">
-                            <button className="modal-btn secondary" onClick={() => { setShowDeleteConfirm(false); setDeletePin(""); }}>
-                                Cancel
-                            </button>
-                            <button
-                                className="modal-btn"
-                                onClick={confirmDelete}
-                                style={{ background: '#ef4444', color: '#fff' }}
-                            >
-                                DELETE
-                            </button>
-                        </div>
+                    <div className="modal-box" style={{ maxWidth: '400px', border: '1px solid rgba(239, 68, 68, 0.4)', textAlign: 'center' }}>
+
+                        {deleteStep === 'warning' && (
+                            <>
+                                <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+                                <h3 className="modal-title" style={{ color: '#ef4444', justifyContent: 'center', padding: 0 }}>Permanently Delete?</h3>
+                                <p className="modal-subtitle" style={{ color: '#fca5a5', marginBottom: '8px' }}>
+                                    This action CANNOT be undone.
+                                </p>
+                                <p style={{ fontSize: '13px', color: '#71717a', marginBottom: '24px' }}>
+                                    You are about to delete <b>{deleteContext?.teamNumber}</b> from <b>{deleteContext?.eventName}</b>.
+                                </p>
+                                <div className="modal-btns">
+                                    <button className="modal-btn secondary" onClick={() => { setShowDeleteConfirm(false); setDeleteContext(null); }}>
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="modal-btn"
+                                        onClick={proceedToPin}
+                                        disabled={deleteTimer > 0}
+                                        style={{
+                                            background: deleteTimer > 0 ? 'rgba(239, 68, 68, 0.1)' : '#ef4444',
+                                            color: deleteTimer > 0 ? '#71717a' : '#fff',
+                                            cursor: deleteTimer > 0 ? 'not-allowed' : 'pointer'
+                                        }}
+                                    >
+                                        {deleteTimer > 0 ? `Wait ${deleteTimer}s` : "Yes, Proceed"}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {deleteStep === 'pin' && (
+                            <>
+                                <button className="modal-close" onClick={() => setShowDeleteConfirm(false)}>×</button>
+                                <h3 className="modal-title" style={{ color: '#ef4444', justifyContent: 'center' }}>Enter PIN to Delete</h3>
+                                <p className="modal-subtitle">Security verification required.</p>
+                                <input
+                                    type="password"
+                                    className="pin-input"
+                                    value={deletePin}
+                                    onChange={(e) => setDeletePin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                                    placeholder="••••"
+                                    maxLength={4}
+                                    autoFocus
+                                    style={{ borderColor: 'rgba(239, 68, 68, 0.4)' }}
+                                />
+                                {deleteError && <p className="pin-error">{deleteError}</p>}
+                                <div className="modal-btns">
+                                    <button className="modal-btn secondary" onClick={() => {
+                                        setShowDeleteConfirm(false);
+                                        setDeletePin("");
+                                        setDeleteError("");
+                                        setDeleteStep('warning');
+                                    }}>
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="modal-btn"
+                                        onClick={confirmDelete}
+                                        style={{ background: '#ef4444', color: '#fff' }}
+                                    >
+                                        DELETE NOW
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {deleteStep === 'deleting' && (
+                            <div style={{ padding: '20px 0' }}>
+                                <div className="loading-spinner" style={{ margin: '0 auto 20px', borderColor: 'rgba(239, 68, 68, 0.2)', borderTopColor: '#ef4444' }} />
+                                <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#ef4444' }}>Deleting Registration...</h3>
+                                <p style={{ fontSize: '13px', color: '#71717a', marginTop: '8px' }}>Please wait, this may take a moment.</p>
+                            </div>
+                        )}
+
                     </div>
                 </div>
             )}
@@ -858,17 +942,25 @@ export default function AdminDashboard() {
                                         <option value="completed">Verified</option>
                                     </select>
                                 </div>
-                                <div className="modal-btns" style={{ justifyContent: 'space-between' }}>
+                                <div className="modal-btns" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                     <button
                                         className="modal-btn"
-                                        style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.4)' }}
-                                        onClick={() => editData && handleDeleteRequest(editData.id)}
+                                        style={{
+                                            background: 'rgba(239, 68, 68, 0.1)',
+                                            color: '#fca5a5',
+                                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                                            fontSize: '12px',
+                                            padding: '8px 12px',
+                                            flex: 'unset',
+                                            width: 'auto'
+                                        }}
+                                        onClick={() => editData && handleDeleteRequest(editData)}
                                     >
-                                        Delete Registration
+                                        Delete
                                     </button>
-                                    <div style={{ display: 'flex', gap: '12px' }}>
-                                        <button className="modal-btn secondary" onClick={closeModal}>Cancel</button>
-                                        <button className="modal-btn primary" onClick={saveEdits}>Save Changes</button>
+                                    <div style={{ display: 'flex', gap: '12px', flex: 1, justifyContent: 'flex-end' }}>
+                                        <button className="modal-btn secondary" onClick={closeModal} style={{ flex: 'unset', width: '100px' }}>Cancel</button>
+                                        <button className="modal-btn primary" onClick={saveEdits} style={{ flex: 'unset', width: '140px' }}>Save Changes</button>
                                     </div>
                                 </div>
                             </div>
