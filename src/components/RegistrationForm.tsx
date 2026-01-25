@@ -251,6 +251,7 @@ export default function RegistrationForm({
             onSuccess();
 
         } catch (err: any) {
+            console.error("REGISTRATION ERROR:", err);
             setError(err.message || "Registration failed. Please try again.");
         } finally {
             setLoading(false);
@@ -1067,6 +1068,15 @@ export default function RegistrationForm({
                                 </div>
                                 <h3 className="payment-title">Payment Confirmation</h3>
                                 <p style={{ color: '#71717a', marginBottom: '24px' }}>Enter your UTR Number to complete registration</p>
+
+                                {error && (
+                                    <div className="error-box" style={{ marginBottom: '20px' }}>
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        {error}
+                                    </div>
+                                )}
 
                                 <input
                                     type="text"
