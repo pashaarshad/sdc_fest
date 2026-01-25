@@ -52,33 +52,17 @@ export default function RegistrationForm({
     const [paymentDelay, setPaymentDelay] = useState(15);
     const [screenshot, setScreenshot] = useState<File | null>(null);
 
-    // Simple Image Compression
-    const compressImage = async (file: File): Promise<Blob> => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target?.result as string;
-                img.onload = () => {
-                    const canvas = document.createElement("canvas");
-                    const MAX_WIDTH = 800; // Resize to max 800px width
-                    const scaleSize = MAX_WIDTH / img.width;
-                    if (img.width > MAX_WIDTH) {
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                    } else {
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                    }
-                    const ctx = canvas.getContext("2d");
-                    ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    canvas.toBlob((blob) => {
-                        if (blob) resolve(blob);
-                    }, "image/jpeg", 0.7); // 70% Quality
-                };
-            };
-        });
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert("File size must be less than 5MB");
+                e.target.value = "";
+                setScreenshot(null);
+                return;
+            }
+            setScreenshot(file);
+        }
     };
 
     useEffect(() => {
@@ -226,9 +210,8 @@ export default function RegistrationForm({
             // Upload Screenshot
             let screenshotUrl = "";
             if (screenshot) {
-                const compressedBlob = await compressImage(screenshot);
                 const storageRef = ref(storage, `registrations/${eventId}/${teamId}/screenshot.jpg`);
-                await uploadBytes(storageRef, compressedBlob);
+                await uploadBytes(storageRef, screenshot);
                 screenshotUrl = await getDownloadURL(storageRef);
             }
 
@@ -1087,8 +1070,13 @@ export default function RegistrationForm({
                                     type="text"
                                     className="transaction-input"
                                     value={utrNumber}
-                                    onChange={(e) => setUtrNumber(e.target.value)}
-                                    placeholder="Enter UTR Number"
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (/^\d*$/.test(val)) {
+                                            setUtrNumber(val);
+                                        }
+                                    }}
+                                    placeholder="Enter UTR Number (Digits Only)"
                                 />
                                 <p className="transaction-hint">You can find the UTR Number in your UPI app&apos;s transaction history</p>
 
@@ -1100,11 +1088,11 @@ export default function RegistrationForm({
                                         type="file"
                                         accept="image/*"
                                         className="form-input"
-                                        onChange={(e) => setScreenshot(e.target.files ? e.target.files[0] : null)}
+                                        onChange={handleFileChange}
                                         style={{ padding: '12px' }}
                                     />
                                     <p style={{ fontSize: '12px', color: '#71717a', marginTop: '6px' }}>
-                                        Upload screenshot (Max 5MB). Auto-compressed.
+                                        Upload screenshot (Max 5MB)
                                     </p>
                                 </div>
 
