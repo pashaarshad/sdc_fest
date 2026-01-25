@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { signInWithPopup, User } from "firebase/auth";
 import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
-import { auth, db, googleProvider, GOOGLE_SHEETS_URL, UPI_ID, UPI_NAME } from "@/lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, db, storage, googleProvider, GOOGLE_SHEETS_URL, UPI_ID, UPI_NAME } from "@/lib/firebase";
 import { QRCodeSVG } from "qrcode.react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -49,6 +50,36 @@ export default function RegistrationForm({
     const [mounted, setMounted] = useState(false);
     const [canCompletePayment, setCanCompletePayment] = useState(false);
     const [paymentDelay, setPaymentDelay] = useState(15);
+    const [screenshot, setScreenshot] = useState<File | null>(null);
+
+    // Simple Image Compression
+    const compressImage = async (file: File): Promise<Blob> => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const MAX_WIDTH = 800; // Resize to max 800px width
+                    const scaleSize = MAX_WIDTH / img.width;
+                    if (img.width > MAX_WIDTH) {
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                    } else {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                    }
+                    const ctx = canvas.getContext("2d");
+                    ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob((blob) => {
+                        if (blob) resolve(blob);
+                    }, "image/jpeg", 0.7); // 70% Quality
+                };
+            };
+        });
+    };
 
     useEffect(() => {
         setMounted(true);
@@ -178,6 +209,11 @@ export default function RegistrationForm({
             return;
         }
 
+        if (!screenshot) {
+            setError("Please upload the payment screenshot");
+            return;
+        }
+
         try {
             setLoading(true);
             setError("");
@@ -185,6 +221,16 @@ export default function RegistrationForm({
             const registrationsRef = collection(db, "registrations", eventId, "teams");
             const snapshot = await getDocs(registrationsRef);
             const nextTeamNumber = snapshot.size + 1;
+            const teamId = `${eventId}-${nextTeamNumber}`; // Create a unique ID for storage path
+
+            // Upload Screenshot
+            let screenshotUrl = "";
+            if (screenshot) {
+                const compressedBlob = await compressImage(screenshot);
+                const storageRef = ref(storage, `registrations/${eventId}/${teamId}/screenshot.jpg`);
+                await uploadBytes(storageRef, compressedBlob);
+                screenshotUrl = await getDownloadURL(storageRef);
+            }
 
             const registrationData = {
                 teamNumber: nextTeamNumber,
@@ -196,6 +242,7 @@ export default function RegistrationForm({
                 members,
                 registrationFee,
                 utrNumber,
+                screenshotUrl, // Save URL
                 paymentStatus: "pending",
                 registeredAt: Timestamp.now(),
                 userId: user?.uid || ""
@@ -1044,6 +1091,22 @@ export default function RegistrationForm({
                                     placeholder="Enter UTR Number"
                                 />
                                 <p className="transaction-hint">You can find the UTR Number in your UPI app&apos;s transaction history</p>
+
+                                <div style={{ marginBottom: '24px', textAlign: 'left' }}>
+                                    <label className="form-label">
+                                        Payment Screenshot *
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="form-input"
+                                        onChange={(e) => setScreenshot(e.target.files ? e.target.files[0] : null)}
+                                        style={{ padding: '12px' }}
+                                    />
+                                    <p style={{ fontSize: '12px', color: '#71717a', marginTop: '6px' }}>
+                                        Upload screenshot (Max 5MB). Auto-compressed.
+                                    </p>
+                                </div>
 
                                 <button className="primary-btn" onClick={handleSubmit} disabled={loading}>
                                     {loading ? <div className="spinner" style={{ borderColor: 'rgba(0,0,0,0.2)', borderTopColor: '#000' }} /> : "Submit Registration"}
