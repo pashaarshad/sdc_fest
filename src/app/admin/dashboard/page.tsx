@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { collection, doc, updateDoc, getDocs, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { allEvents } from "@/data/events";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface Member {
     name: string;
@@ -343,6 +346,129 @@ export default function AdminDashboard() {
             hour: "2-digit",
             minute: "2-digit"
         });
+    };
+
+    // Export to Excel
+    const exportToExcel = () => {
+        const wb = XLSX.utils.book_new();
+        const exportDate = new Date().toISOString().split('T')[0];
+
+        if (selectedEvent === "all") {
+            // Group by Event
+            const grouped = registrations.reduce((acc, curr) => {
+                const key = curr.eventName || "Unknown";
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(curr);
+                return acc;
+            }, {} as Record<string, Registration[]>);
+
+            Object.keys(grouped).forEach(eventName => {
+                const sheetData = grouped[eventName].map(r => ({
+                    "Team ID": r.teamNumber,
+                    "College": r.collegeName,
+                    "Email": r.email,
+                    "Phone": r.members[0]?.phone || "",
+                    "Members": r.members.map(m => `${m.name} (${m.phone})`).join(", "),
+                    "Fee": r.registrationFee,
+                    "UTR": r.utrNumber,
+                    "Status": r.paymentStatus,
+                    "Date": formatDate(r.registeredAt).split(',')[0]
+                }));
+                const ws = XLSX.utils.json_to_sheet(sheetData);
+                // Sheet name max length 31
+                const safeName = eventName.replace(/[\[\]\*\/\\\?]/g, "").substring(0, 30);
+                XLSX.utils.book_append_sheet(wb, ws, safeName);
+            });
+        } else {
+            const sheetData = filteredRegistrations.map(r => ({
+                "Team ID": r.teamNumber,
+                "College": r.collegeName,
+                "Email": r.email,
+                "Phone": r.members[0]?.phone || "",
+                "Members": r.members.map(m => `${m.name} (${m.phone})`).join(", "),
+                "Fee": r.registrationFee,
+                "UTR": r.utrNumber,
+                "Status": r.paymentStatus,
+                "Date": formatDate(r.registeredAt).split(',')[0]
+            }));
+            const ws = XLSX.utils.json_to_sheet(sheetData);
+            XLSX.utils.book_append_sheet(wb, ws, "Registrations");
+        }
+
+        XLSX.writeFile(wb, `Shreshta_Registrations_${exportDate}.xlsx`);
+    };
+
+    // Export to PDF
+    const exportToPDF = () => {
+        const doc = new jsPDF();
+        const exportDate = new Date().toISOString().split('T')[0];
+
+        doc.setFontSize(18);
+        doc.text("SHRESHTA 2026 - Registrations", 14, 20);
+        doc.setFontSize(12);
+        doc.text(`Generated on: ${exportDate}`, 14, 28);
+
+        const tableColumn = ["ID", "College", "Email", "Members", "Fee", "UTR", "Status"];
+        let lastY = 35;
+
+        const generateTable = (data: Registration[], startY: number) => {
+            const tableRows = data.map(r => [
+                r.teamNumber,
+                r.collegeName,
+                r.email,
+                r.members.map(m => m.name).join(", "),
+                r.registrationFee,
+                r.utrNumber,
+                r.paymentStatus
+            ]);
+
+            autoTable(doc, {
+                head: [tableColumn],
+                body: tableRows,
+                startY: startY,
+                theme: 'grid',
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [212, 168, 67] }
+            });
+            // @ts-ignore
+            return doc.lastAutoTable.finalY + 10;
+        };
+
+        if (selectedEvent === "all") {
+            const grouped = registrations.reduce((acc, curr) => {
+                const key = curr.eventName || "Unknown";
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(curr);
+                return acc;
+            }, {} as Record<string, Registration[]>);
+
+            Object.keys(grouped).forEach(eventName => {
+                // Check if we need a new page
+                if (lastY > 250) {
+                    doc.addPage();
+                    lastY = 20;
+                }
+
+                doc.setFontSize(14);
+                // @ts-ignore
+                doc.setTextColor(212, 168, 67); // Gold color
+                doc.text(eventName, 14, lastY);
+                // @ts-ignore
+                doc.setTextColor(0, 0, 0); // Reset color
+
+                lastY = generateTable(grouped[eventName], lastY + 5);
+            });
+        } else {
+            // @ts-ignore
+            doc.setTextColor(212, 168, 67);
+            const eventName = filteredRegistrations[0]?.eventName || "Event Details";
+            doc.text(eventName, 14, lastY);
+            // @ts-ignore
+            doc.setTextColor(0, 0, 0);
+            generateTable(filteredRegistrations, lastY + 5);
+        }
+
+        doc.save(`Shreshta_Registrations_${exportDate}.pdf`);
     };
 
     // Open Modal Handler
@@ -1213,20 +1339,67 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Filter */}
-                    <div className="filter-section">
-                        <div className="filter-label">Filter by Event:</div>
-                        <select
-                            className="filter-select"
-                            value={selectedEvent}
-                            onChange={(e) => setSelectedEvent(e.target.value)}
-                        >
-                            <option value="all">All Events</option>
-                            {allEvents.map((event) => (
-                                <option key={event.id} value={event.id}>
-                                    {event.title}
-                                </option>
-                            ))}
-                        </select>
+                    <div className="filter-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
+                        <div>
+                            <div className="filter-label">Filter by Event:</div>
+                            <select
+                                className="filter-select"
+                                value={selectedEvent}
+                                onChange={(e) => setSelectedEvent(e.target.value)}
+                            >
+                                <option value="all">All Events</option>
+                                {allEvents.map((event) => (
+                                    <option key={event.id} value={event.id}>
+                                        {event.title}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button
+                                onClick={exportToExcel}
+                                style={{
+                                    padding: '10px 16px',
+                                    background: '#107c41',
+                                    border: '1px solid #107c41',
+                                    borderRadius: '8px',
+                                    color: '#fff',
+                                    fontWeight: 600,
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                            >
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Excel
+                            </button>
+                            <button
+                                onClick={exportToPDF}
+                                style={{
+                                    padding: '10px 16px',
+                                    background: '#b91c1c',
+                                    border: '1px solid #b91c1c',
+                                    borderRadius: '8px',
+                                    color: '#fff',
+                                    fontWeight: 600,
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                            >
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                PDF
+                            </button>
+                        </div>
                     </div>
 
                     {/* Table */}
