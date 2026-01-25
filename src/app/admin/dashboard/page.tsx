@@ -56,6 +56,9 @@ export default function AdminDashboard() {
     // Details Modal State
     const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
 
+    // Copied State
+    const [copiedUtr, setCopiedUtr] = useState<string | null>(null);
+
     // Check authentication
     useEffect(() => {
         const isLoggedIn = sessionStorage.getItem("adminLoggedIn");
@@ -284,6 +287,12 @@ export default function AdminDashboard() {
             setDeleteStep('warning'); // Reset step
             setDeleteContext(null); // Reset target
         }
+    };
+
+    const handleCopyUtr = (utr: string) => {
+        navigator.clipboard.writeText(utr);
+        setCopiedUtr(utr);
+        setTimeout(() => setCopiedUtr(null), 2000);
     };
 
     const proceedToPin = () => {
@@ -1054,7 +1063,42 @@ export default function AdminDashboard() {
                                             {/* UTR */}
                                             <div>
                                                 <div className="detail-label">UTR Number</div>
-                                                <div className="utr-display">{selectedRegistration.utrNumber}</div>
+                                                <div className="utr-display" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                                                    <span>{selectedRegistration.utrNumber}</span>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleCopyUtr(selectedRegistration.utrNumber);
+                                                        }}
+                                                        style={{
+                                                            background: 'rgba(255, 255, 255, 0.1)',
+                                                            border: 'none',
+                                                            borderRadius: '4px',
+                                                            cursor: 'pointer',
+                                                            padding: '4px 8px',
+                                                            color: copiedUtr === selectedRegistration.utrNumber ? '#4ade80' : '#a1a1aa',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '4px',
+                                                            fontSize: '11px',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                        title="Copy UTR"
+                                                    >
+                                                        {copiedUtr === selectedRegistration.utrNumber ? (
+                                                            <>
+                                                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                                Copied!
+                                                            </>
+                                                        ) : (
+                                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                            </svg>
+                                                        )}
+                                                    </button>
+                                                </div>
                                                 {selectedRegistration.screenshotUrl && (
                                                     <a
                                                         href={selectedRegistration.screenshotUrl}
