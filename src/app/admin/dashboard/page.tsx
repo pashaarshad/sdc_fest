@@ -751,14 +751,14 @@ export default function AdminDashboard() {
                 }
 
                 @media (max-width: 768px) {
-                    .header-title { font-size: 16px; width: 100%; justify-content: space-between; }
+                    .header-title { font-size: 16px; width: auto; }
                     .header-title span:last-child { display: none; } /* Hide text logo on super small if needed, for now just edit mode badge */
                     .edit-mode-badge { display: none; }
                     .stats-grid { grid-template-columns: 1fr; gap: 12px; }
                     .filter-select { width: 100%; }
-                    .header-actions { position: fixed; bottom: 20px; right: 20px; z-index: 999; flex-direction: column-reverse; gap: 10px; }
-                    .logout-btn { padding: 8px 14px; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); } 
-                    .edit-btn {  padding: 8px 14px; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); background: #1a1a1f; color: #d4a843; border-color: #d4a843; }
+                    .header-actions { position: static; flex-direction: row; gap: 8px; }
+                    .logout-btn { padding: 6px 10px; font-size: 12px; } 
+                    .edit-btn {  padding: 6px 10px; font-size: 12px; }
 
                     .modal-grid { grid-template-columns: 1fr; gap: 16px; }
                     
