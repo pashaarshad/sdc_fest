@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { collection, doc, updateDoc, getDocs, deleteDoc } from "firebase/firestore";
+import { collection, doc, updateDoc, getDocs, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { allEvents } from "@/data/events";
 
@@ -43,6 +43,9 @@ export default function AdminDashboard() {
     const [pinError, setPinError] = useState("");
     const [editingRow, setEditingRow] = useState<string | null>(null);
     const [editData, setEditData] = useState<Registration | null>(null);
+
+    // Details Modal State
+    const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
 
     // Check authentication
     useEffect(() => {
@@ -112,7 +115,7 @@ export default function AdminDashboard() {
         }
     };
 
-    // Start editing a row
+    // Start editing a row (inline or module)
     const startEditing = (reg: Registration) => {
         setEditingRow(reg.id);
         setEditData({ ...reg, members: [...reg.members.map(m => ({ ...m }))] });
@@ -145,17 +148,9 @@ export default function AdminDashboard() {
 
                 // Add to new collection with new ID
                 const { id, ...dataWithoutId } = editData;
-                const newDocRef = doc(collection(db, "registrations", editData.eventId, "teams"));
-                await updateDoc(newDocRef, {
+                await addDoc(collection(db, "registrations", editData.eventId, "teams"), {
                     ...dataWithoutId,
                     teamNumber: newTeamNumber
-                }).catch(async () => {
-                    // If update fails, create new doc
-                    const { addDoc } = await import("firebase/firestore");
-                    await addDoc(collection(db, "registrations", editData.eventId, "teams"), {
-                        ...dataWithoutId,
-                        teamNumber: newTeamNumber
-                    });
                 });
             } else {
                 // Update in place
@@ -169,15 +164,7 @@ export default function AdminDashboard() {
                 });
             }
 
-            // Update local state
-            setRegistrations(prev => prev.map(r =>
-                r.id === editData.id ? editData : r
-            ));
-
-            setEditingRow(null);
-            setEditData(null);
-
-            // Refresh data
+            // Reload page to refresh data (simplest way to handle ID changes/moves)
             window.location.reload();
         } catch (error) {
             console.error("Error saving edits:", error);
@@ -185,36 +172,7 @@ export default function AdminDashboard() {
         }
     };
 
-    // Update edit data
-    const updateEditField = (field: keyof Registration, value: any) => {
-        if (!editData) return;
-        setEditData({ ...editData, [field]: value });
-    };
-
-    // Update member in edit data
-    const updateEditMember = (index: number, field: keyof Member, value: string) => {
-        if (!editData) return;
-        const newMembers = [...editData.members];
-        newMembers[index] = { ...newMembers[index], [field]: value };
-        setEditData({ ...editData, members: newMembers });
-    };
-
-    // Handle event change (auto-update fee)
-    const handleEventChange = (newEventId: string) => {
-        if (!editData) return;
-        const event = allEvents.find(e => e.id === newEventId);
-        if (event) {
-            setEditData({
-                ...editData,
-                eventId: newEventId,
-                eventName: event.title,
-                registrationFee: event.registrationFee,
-                category: event.category
-            });
-        }
-    };
-
-    // Update payment status
+    // Update edit status directly (for modal or inline)
     const updatePaymentStatus = async (eventId: string, docId: string, status: string) => {
         try {
             const docRef = doc(db, "registrations", eventId, "teams", docId);
@@ -231,9 +189,46 @@ export default function AdminDashboard() {
                 pending: status === "completed" ? prev.pending - 1 : prev.pending + 1,
                 verified: status === "completed" ? prev.verified + 1 : prev.verified - 1
             }));
+
+            // Also update selected registration if modal is open
+            if (selectedRegistration && selectedRegistration.id === docId) {
+                setSelectedRegistration(prev => prev ? { ...prev, paymentStatus: status } : null);
+            }
+            // Also update editData if editing
+            if (editData && editData.id === docId) {
+                setEditData(prev => prev ? { ...prev, paymentStatus: status } : null);
+            }
+
         } catch (error) {
             console.error("Error updating status:", error);
             alert("Failed to update status");
+        }
+    };
+
+    // Update edit data
+    const updateEditField = (field: keyof Registration, value: any) => {
+        if (!editData) return;
+        setEditData({ ...editData, [field]: value });
+    };
+
+    const updateEditMember = (index: number, field: keyof Member, value: string) => {
+        if (!editData) return;
+        const newMembers = [...editData.members];
+        newMembers[index] = { ...newMembers[index], [field]: value };
+        setEditData({ ...editData, members: newMembers });
+    };
+
+    const handleEventChange = (newEventId: string) => {
+        if (!editData) return;
+        const event = allEvents.find(e => e.id === newEventId);
+        if (event) {
+            setEditData({
+                ...editData,
+                eventId: newEventId,
+                eventName: event.title,
+                registrationFee: event.registrationFee,
+                category: event.category
+            });
         }
     };
 
@@ -252,6 +247,26 @@ export default function AdminDashboard() {
             minute: "2-digit"
         });
     };
+
+    // Open Modal Handler
+    const handleRowClick = (reg: Registration) => {
+        if (!editMode || (editMode && editingRow !== reg.id)) {
+            setSelectedRegistration(reg);
+            // If in edit mode, initialize edit data for the modal too
+            if (editMode) {
+                setEditingRow(reg.id);
+                setEditData({ ...reg, members: [...reg.members.map(m => ({ ...m }))] });
+            }
+        }
+    };
+
+    const closeModal = () => {
+        setSelectedRegistration(null);
+        if (editMode) {
+            cancelEditing();
+        }
+    };
+
 
     if (!isAuthenticated) {
         return null;
@@ -293,15 +308,9 @@ export default function AdminDashboard() {
                     gap: 12px;
                 }
 
-                .header-title span {
-                    color: #d4a843;
-                }
+                .header-title span { color: #d4a843; }
 
-                .header-actions {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                }
+                .header-actions { display: flex; align-items: center; gap: 12px; }
 
                 .edit-btn {
                     padding: 10px 20px;
@@ -318,14 +327,8 @@ export default function AdminDashboard() {
                     gap: 8px;
                 }
 
-                .edit-btn:hover {
-                    background: rgba(212, 168, 67, 0.2);
-                }
-
-                .edit-btn.active {
-                    background: rgba(212, 168, 67, 0.3);
-                    border-color: #d4a843;
-                }
+                .edit-btn:hover { background: rgba(212, 168, 67, 0.2); }
+                .edit-btn.active { background: rgba(212, 168, 67, 0.3); border-color: #d4a843; }
 
                 .logout-btn {
                     padding: 10px 20px;
@@ -339,9 +342,7 @@ export default function AdminDashboard() {
                     transition: all 0.2s;
                 }
 
-                .logout-btn:hover {
-                    background: rgba(239, 68, 68, 0.2);
-                }
+                .logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
 
                 .dashboard-content {
                     max-width: 1400px;
@@ -371,25 +372,13 @@ export default function AdminDashboard() {
                     margin-bottom: 8px;
                 }
 
-                .stat-value {
-                    font-size: 36px;
-                    font-weight: 800;
-                    color: #fff;
-                }
-
+                .stat-value { font-size: 36px; font-weight: 800; color: #fff; }
                 .stat-card.gold .stat-value { color: #d4a843; }
                 .stat-card.green .stat-value { color: #4ade80; }
                 .stat-card.yellow .stat-value { color: #fbbf24; }
 
-                .filter-section {
-                    margin-bottom: 24px;
-                }
-
-                .filter-label {
-                    font-size: 14px;
-                    color: #a1a1aa;
-                    margin-bottom: 12px;
-                }
+                .filter-section { margin-bottom: 24px; }
+                .filter-label { font-size: 14px; color: #a1a1aa; margin-bottom: 12px; }
 
                 .filter-select {
                     padding: 12px 16px;
@@ -400,11 +389,6 @@ export default function AdminDashboard() {
                     font-size: 15px;
                     min-width: 250px;
                     cursor: pointer;
-                }
-
-                .filter-select:focus {
-                    outline: none;
-                    border-color: rgba(212, 168, 67, 0.5);
                 }
 
                 .table-container {
@@ -422,21 +406,10 @@ export default function AdminDashboard() {
                     justify-content: space-between;
                 }
 
-                .table-title {
-                    font-size: 18px;
-                    font-weight: 700;
-                    color: #fff;
-                }
+                .table-title { font-size: 18px; font-weight: 700; color: #fff; }
+                .table-count { font-size: 14px; color: #d4a843; }
 
-                .table-count {
-                    font-size: 14px;
-                    color: #d4a843;
-                }
-
-                .registrations-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
+                .registrations-table { width: 100%; border-collapse: collapse; }
 
                 .registrations-table th {
                     text-align: left;
@@ -458,8 +431,11 @@ export default function AdminDashboard() {
                     vertical-align: top;
                 }
 
-                .registrations-table tr:hover td {
-                    background: rgba(255, 255, 255, 0.02);
+                .registrations-table tr:hover td { background: rgba(255, 255, 255, 0.02); cursor: pointer; }
+
+                /* Responsive Table Hiding */
+                @media (max-width: 768px) {
+                    .hide-mobile { display: none; }
                 }
 
                 .event-tag {
@@ -512,27 +488,12 @@ export default function AdminDashboard() {
                     border: none;
                 }
 
-                .status-pending {
-                    background: rgba(234, 179, 8, 0.15);
-                    color: #fbbf24;
-                    border: 1px solid rgba(234, 179, 8, 0.3);
-                }
-
-                .status-completed {
-                    background: rgba(34, 197, 94, 0.15);
-                    color: #4ade80;
-                    border: 1px solid rgba(34, 197, 94, 0.3);
-                }
+                .status-pending { background: rgba(234, 179, 8, 0.15); color: #fbbf24; border: 1px solid rgba(234, 179, 8, 0.3); }
+                .status-completed { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
 
                 .date-text { font-size: 12px; color: #71717a; }
 
-                .loading-container {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 80px 20px;
-                }
-
+                .loading-container { display: flex; align-items: center; justify-content: center; padding: 80px 20px; }
                 .loading-spinner {
                     width: 50px;
                     height: 50px;
@@ -542,19 +503,12 @@ export default function AdminDashboard() {
                     animation: spin 0.8s linear infinite;
                 }
 
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
+                @keyframes spin { to { transform: rotate(360deg); } }
 
-                .empty-state {
-                    text-align: center;
-                    padding: 80px 20px;
-                    color: #71717a;
-                }
-
+                .empty-state { text-align: center; padding: 80px 20px; color: #71717a; }
                 .mobile-scroll { overflow-x: auto; }
 
-                /* Edit Mode Styles */
+                /* Edit Mode Styles & Modal */
                 .edit-input {
                     width: 100%;
                     padding: 8px 10px;
@@ -566,9 +520,7 @@ export default function AdminDashboard() {
                     outline: none;
                 }
 
-                .edit-input:focus {
-                    border-color: #d4a843;
-                }
+                .edit-input:focus { border-color: #d4a843; }
 
                 .edit-select {
                     width: 100%;
@@ -581,45 +533,12 @@ export default function AdminDashboard() {
                     cursor: pointer;
                 }
 
-                .action-btns {
-                    display: flex;
-                    gap: 8px;
-                }
+                .action-btns { display: flex; gap: 8px; }
+                .save-btn { padding: 6px 12px; background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 6px; color: #4ade80; font-size: 12px; font-weight: 600; cursor: pointer; }
+                .cancel-btn { padding: 6px 12px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 6px; color: #fca5a5; font-size: 12px; font-weight: 600; cursor: pointer; }
+                .edit-row-btn { padding: 6px 12px; background: rgba(212, 168, 67, 0.2); border: 1px solid rgba(212, 168, 67, 0.4); border-radius: 6px; color: #d4a843; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-                .save-btn {
-                    padding: 6px 12px;
-                    background: rgba(34, 197, 94, 0.2);
-                    border: 1px solid rgba(34, 197, 94, 0.4);
-                    border-radius: 6px;
-                    color: #4ade80;
-                    font-size: 12px;
-                    font-weight: 600;
-                    cursor: pointer;
-                }
-
-                .cancel-btn {
-                    padding: 6px 12px;
-                    background: rgba(239, 68, 68, 0.2);
-                    border: 1px solid rgba(239, 68, 68, 0.4);
-                    border-radius: 6px;
-                    color: #fca5a5;
-                    font-size: 12px;
-                    font-weight: 600;
-                    cursor: pointer;
-                }
-
-                .edit-row-btn {
-                    padding: 6px 12px;
-                    background: rgba(212, 168, 67, 0.2);
-                    border: 1px solid rgba(212, 168, 67, 0.4);
-                    border-radius: 6px;
-                    color: #d4a843;
-                    font-size: 12px;
-                    font-weight: 600;
-                    cursor: pointer;
-                }
-
-                /* PIN Modal */
+                /* Modal Overlay */
                 .modal-overlay {
                     position: fixed;
                     inset: 0;
@@ -628,100 +547,55 @@ export default function AdminDashboard() {
                     align-items: center;
                     justify-content: center;
                     z-index: 1000;
+                    padding: 20px;
+                    backdrop-filter: blur(5px);
                 }
 
                 .modal-box {
                     background: #1a1a1f;
                     border: 1px solid rgba(212, 168, 67, 0.3);
                     border-radius: 16px;
-                    padding: 32px;
-                    max-width: 360px;
+                    padding: 24px;
+                    max-width: 500px;
                     width: 100%;
-                    text-align: center;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    position: relative;
                 }
 
-                .modal-title {
-                    font-size: 20px;
-                    font-weight: 700;
-                    color: #fff;
-                    margin-bottom: 8px;
-                }
-
-                .modal-subtitle {
-                    font-size: 14px;
-                    color: #71717a;
-                    margin-bottom: 24px;
-                }
-
-                .pin-input {
-                    width: 100%;
-                    padding: 16px;
-                    background: rgba(255, 255, 255, 0.05);
-                    border: 2px solid rgba(255, 255, 255, 0.1);
-                    border-radius: 12px;
+                .modal-close {
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
                     font-size: 24px;
-                    font-family: monospace;
-                    color: #fff;
-                    text-align: center;
-                    letter-spacing: 8px;
-                    outline: none;
-                }
-
-                .pin-input:focus {
-                    border-color: #d4a843;
-                }
-
-                .pin-error {
-                    color: #fca5a5;
-                    font-size: 14px;
-                    margin-top: 12px;
-                }
-
-                .modal-btns {
-                    display: flex;
-                    gap: 12px;
-                    margin-top: 24px;
-                }
-
-                .modal-btn {
-                    flex: 1;
-                    padding: 14px;
-                    border-radius: 10px;
-                    font-size: 15px;
-                    font-weight: 600;
+                    color: #71717a;
                     cursor: pointer;
+                    background: none;
                     border: none;
                 }
 
-                .modal-btn.primary {
-                    background: #d4a843;
-                    color: #000;
-                }
+                .modal-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 24px; padding-right: 20px; }
+                .modal-subtitle { font-size: 14px; color: #71717a; margin-bottom: 24px; }
+                .pin-input { width: 100%; padding: 16px; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; font-size: 24px; font-family: monospace; color: #fff; text-align: center; letter-spacing: 8px; outline: none; }
+                .pin-input:focus { border-color: #d4a843; }
+                .pin-error { color: #fca5a5; font-size: 14px; margin-top: 12px; }
+                .modal-btns { display: flex; gap: 12px; margin-top: 24px; }
+                .modal-btn { flex: 1; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; }
+                .modal-btn.primary { background: #d4a843; color: #000; }
+                .modal-btn.secondary { background: rgba(255, 255, 255, 0.1); color: #fff; }
+                .edit-mode-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(212, 168, 67, 0.2); border: 1px solid rgba(212, 168, 67, 0.4); border-radius: 6px; color: #d4a843; font-size: 12px; font-weight: 600; margin-left: 12px; }
 
-                .modal-btn.secondary {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: #fff;
-                }
-
-                .edit-mode-badge {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 6px;
-                    padding: 6px 12px;
-                    background: rgba(212, 168, 67, 0.2);
-                    border: 1px solid rgba(212, 168, 67, 0.4);
-                    border-radius: 6px;
-                    color: #d4a843;
-                    font-size: 12px;
-                    font-weight: 600;
-                    margin-left: 12px;
-                }
+                /* Details Rows */
+                .detail-row { margin-bottom: 16px; }
+                .detail-label { font-size: 12px; color: #71717a; text-transform: uppercase; margin-bottom: 6px; font-weight: 600; }
+                .detail-value { font-size: 15px; color: #fff; }
 
                 @media (max-width: 768px) {
                     .header-title { font-size: 18px; }
                     .stats-grid { grid-template-columns: 1fr 1fr; }
                     .filter-select { width: 100%; }
                     .header-actions { flex-wrap: wrap; }
+                    .edit-mode-badge { display: none; } /* Hide on mobile to save space */
                 }
             `}</style>
 
@@ -729,6 +603,7 @@ export default function AdminDashboard() {
             {showPinModal && (
                 <div className="modal-overlay">
                     <div className="modal-box">
+                        <button className="modal-close" onClick={() => { setShowPinModal(false); setPinInput(""); setPinError(""); }}>×</button>
                         <h3 className="modal-title">🔐 Enter Edit PIN</h3>
                         <p className="modal-subtitle">Enter 4-digit PIN to enable edit mode</p>
                         <input
@@ -753,6 +628,147 @@ export default function AdminDashboard() {
                 </div>
             )}
 
+            {/* Details Modal */}
+            {selectedRegistration && (
+                <div className="modal-overlay">
+                    <div className="modal-box">
+                        <button className="modal-close" onClick={closeModal}>×</button>
+                        <h3 className="modal-title">
+                            {editMode ? "Edit Registration" : "Registration Details"}
+                        </h3>
+
+                        {editMode && editData ? (
+                            <div className="edit-form-container">
+                                <div className="detail-row">
+                                    <div className="detail-label">Event</div>
+                                    <select
+                                        className="edit-select"
+                                        value={editData.eventId}
+                                        onChange={(e) => handleEventChange(e.target.value)}
+                                    >
+                                        {allEvents.map((event) => (
+                                            <option key={event.id} value={event.id}>
+                                                {event.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">College</div>
+                                    <input
+                                        type="text"
+                                        className="edit-input"
+                                        value={editData.collegeName}
+                                        onChange={(e) => updateEditField("collegeName", e.target.value)}
+                                    />
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">Team Members</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        {editData.members?.map((member, idx) => (
+                                            <div key={idx} style={{ display: 'flex', gap: '8px' }}>
+                                                <input
+                                                    type="text"
+                                                    className="edit-input"
+                                                    value={member.name}
+                                                    onChange={(e) => updateEditMember(idx, "name", e.target.value)}
+                                                    placeholder="Name"
+                                                    style={{ flex: 1 }}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    className="edit-input"
+                                                    value={member.phone}
+                                                    onChange={(e) => updateEditMember(idx, "phone", e.target.value)}
+                                                    placeholder="Phone"
+                                                    style={{ width: '120px' }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">UTR Number</div>
+                                    <input
+                                        type="text"
+                                        className="edit-input"
+                                        value={editData.utrNumber}
+                                        onChange={(e) => updateEditField("utrNumber", e.target.value)}
+                                    />
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">Payment Status</div>
+                                    <select
+                                        className={`edit-select`}
+                                        value={editData.paymentStatus}
+                                        onChange={(e) => updateEditField("paymentStatus", e.target.value)}
+                                    >
+                                        <option value="pending">Pending</option>
+                                        <option value="completed">Verified</option>
+                                    </select>
+                                </div>
+                                <div className="modal-btns">
+                                    <button className="modal-btn secondary" onClick={closeModal}>Cancel</button>
+                                    <button className="modal-btn primary" onClick={saveEdits}>Save Changes</button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="details-container">
+                                <div className="detail-row">
+                                    <div className="detail-label">Team ID</div>
+                                    <div className="detail-value text-gold">#{selectedRegistration.teamNumber}</div>
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">Event</div>
+                                    <div className="detail-value">{selectedRegistration.eventName}</div>
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">College</div>
+                                    <div className="detail-value">{selectedRegistration.collegeName}</div>
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">Contact Email</div>
+                                    <div className="detail-value">{selectedRegistration.email}</div>
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">Members</div>
+                                    {selectedRegistration.members?.map((m, i) => (
+                                        <div key={i} className="detail-value" style={{ marginBottom: '4px' }}>
+                                            {m.name} <span style={{ color: '#71717a', fontSize: '13px' }}>({m.phone})</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">Registration Fee</div>
+                                    <div className="detail-value">{selectedRegistration.registrationFee}</div>
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">UTR Number</div>
+                                    <div className="detail-value font-mono bg-white/5 p-2 rounded inline-block">
+                                        {selectedRegistration.utrNumber}
+                                    </div>
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">Payment Status</div>
+                                    <select
+                                        className={`status-select ${selectedRegistration.paymentStatus === "completed" ? "status-completed" : "status-pending"}`}
+                                        value={selectedRegistration.paymentStatus}
+                                        onChange={(e) => updatePaymentStatus(selectedRegistration.eventId, selectedRegistration.id, e.target.value)}
+                                    >
+                                        <option value="pending">Pending Verification</option>
+                                        <option value="completed">Verified</option>
+                                    </select>
+                                </div>
+                                <div className="detail-row">
+                                    <div className="detail-label">Registered Date</div>
+                                    <div className="detail-value">{formatDate(selectedRegistration.registeredAt)}</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
             <div className="dashboard">
                 <header className="dashboard-header">
                     <div className="header-inner">
@@ -760,7 +776,7 @@ export default function AdminDashboard() {
                             <svg width="28" height="28" fill="none" stroke="#d4a843" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
                             </svg>
-                            <span>SHRESHTA</span> Admin Dashboard
+                            <span>SHRESHTA</span> Admin
                             {editMode && <span className="edit-mode-badge">✏️ Edit Mode</span>}
                         </h1>
                         <div className="header-actions">
@@ -771,7 +787,7 @@ export default function AdminDashboard() {
                                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
-                                {editMode ? "Exit Edit" : "Edit"}
+                                {editMode ? "Exit" : "Edit"}
                             </button>
                             <button className="logout-btn" onClick={handleLogout}>
                                 Logout
@@ -838,132 +854,52 @@ export default function AdminDashboard() {
                                             <th>Event</th>
                                             <th>College</th>
                                             <th>Email</th>
-                                            <th>Members</th>
-                                            <th>Fee</th>
-                                            <th>UTR Number</th>
-                                            <th>Status</th>
-                                            <th>Date</th>
-                                            {editMode && <th>Actions</th>}
+                                            <th className="hide-mobile">Members</th>
+                                            <th className="hide-mobile">Fee</th>
+                                            <th className="hide-mobile">UTR Number</th>
+                                            <th className="hide-mobile">Status</th>
+                                            <th className="hide-mobile">Date</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {filteredRegistrations.map((reg) => {
-                                            const isEditing = editingRow === reg.id;
-                                            const data = isEditing && editData ? editData : reg;
-
                                             return (
-                                                <tr key={`${reg.eventId}-${reg.id}`}>
+                                                <tr key={`${reg.eventId}-${reg.id}`} onClick={() => handleRowClick(reg)}>
                                                     <td>
                                                         <span className="team-badge">{reg.teamNumber}</span>
                                                     </td>
                                                     <td>
-                                                        {isEditing ? (
-                                                            <select
-                                                                className="edit-select"
-                                                                value={data.eventId}
-                                                                onChange={(e) => handleEventChange(e.target.value)}
-                                                            >
-                                                                {allEvents.map((event) => (
-                                                                    <option key={event.id} value={event.id}>
-                                                                        {event.title}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        ) : (
-                                                            <span className="event-tag">{data.eventName}</span>
-                                                        )}
+                                                        <span className="event-tag">{reg.eventName}</span>
                                                     </td>
                                                     <td>
-                                                        {isEditing ? (
-                                                            <input
-                                                                type="text"
-                                                                className="edit-input"
-                                                                value={data.collegeName}
-                                                                onChange={(e) => updateEditField("collegeName", e.target.value)}
-                                                            />
-                                                        ) : (
-                                                            <span className="college-name">{data.collegeName}</span>
-                                                        )}
+                                                        <span className="college-name">{reg.collegeName}</span>
                                                     </td>
                                                     <td>
-                                                        <span className="email-text">{data.email}</span>
+                                                        <span className="email-text">{reg.email}</span>
                                                     </td>
-                                                    <td>
-                                                        {isEditing ? (
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                                {data.members?.map((member, idx) => (
-                                                                    <div key={idx} style={{ display: 'flex', gap: '4px' }}>
-                                                                        <input
-                                                                            type="text"
-                                                                            className="edit-input"
-                                                                            value={member.name}
-                                                                            onChange={(e) => updateEditMember(idx, "name", e.target.value)}
-                                                                            placeholder="Name"
-                                                                            style={{ flex: 1 }}
-                                                                        />
-                                                                        <input
-                                                                            type="text"
-                                                                            className="edit-input"
-                                                                            value={member.phone}
-                                                                            onChange={(e) => updateEditMember(idx, "phone", e.target.value)}
-                                                                            placeholder="Phone"
-                                                                            style={{ width: '100px' }}
-                                                                        />
-                                                                    </div>
-                                                                ))}
+                                                    <td className="hide-mobile">
+                                                        {reg.members?.map((member, idx) => (
+                                                            <div key={idx} className="member-item">
+                                                                <span className="member-name">{member.name}</span>
+                                                                <span className="member-phone">{member.phone}</span>
                                                             </div>
-                                                        ) : (
-                                                            data.members?.map((member, idx) => (
-                                                                <div key={idx} className="member-item">
-                                                                    <span className="member-name">{member.name}</span>
-                                                                    <span className="member-phone">{member.phone}</span>
-                                                                </div>
-                                                            ))
-                                                        )}
+                                                        ))}
                                                     </td>
-                                                    <td>{data.registrationFee}</td>
-                                                    <td>
-                                                        {isEditing ? (
-                                                            <input
-                                                                type="text"
-                                                                className="edit-input"
-                                                                value={data.utrNumber}
-                                                                onChange={(e) => updateEditField("utrNumber", e.target.value)}
-                                                            />
-                                                        ) : (
-                                                            <span className="utr-number">{data.utrNumber}</span>
-                                                        )}
+                                                    <td className="hide-mobile">{reg.registrationFee}</td>
+                                                    <td className="hide-mobile">
+                                                        <span className="utr-number">{reg.utrNumber}</span>
                                                     </td>
-                                                    <td>
-                                                        <select
-                                                            className={`status-select ${data.paymentStatus === "completed" ? "status-completed" : "status-pending"}`}
-                                                            value={data.paymentStatus}
-                                                            onChange={(e) => isEditing
-                                                                ? updateEditField("paymentStatus", e.target.value)
-                                                                : updatePaymentStatus(reg.eventId, reg.id, e.target.value)
-                                                            }
+                                                    <td className="hide-mobile">
+                                                        <span
+                                                            className={`status-select ${reg.paymentStatus === "completed" ? "status-completed" : "status-pending"}`}
+                                                            style={{ padding: '6px 10px', display: 'inline-block' }}
                                                         >
-                                                            <option value="pending">Pending</option>
-                                                            <option value="completed">Verified</option>
-                                                        </select>
+                                                            {reg.paymentStatus === "completed" ? "Verified" : "Pending"}
+                                                        </span>
                                                     </td>
-                                                    <td>
-                                                        <span className="date-text">{formatDate(data.registeredAt)}</span>
+                                                    <td className="hide-mobile">
+                                                        <span className="date-text">{formatDate(reg.registeredAt)}</span>
                                                     </td>
-                                                    {editMode && (
-                                                        <td>
-                                                            {isEditing ? (
-                                                                <div className="action-btns">
-                                                                    <button className="save-btn" onClick={saveEdits}>Save</button>
-                                                                    <button className="cancel-btn" onClick={cancelEditing}>Cancel</button>
-                                                                </div>
-                                                            ) : (
-                                                                <button className="edit-row-btn" onClick={() => startEditing(reg)}>
-                                                                    Edit
-                                                                </button>
-                                                            )}
-                                                        </td>
-                                                    )}
                                                 </tr>
                                             );
                                         })}
