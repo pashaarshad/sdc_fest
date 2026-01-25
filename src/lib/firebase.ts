@@ -18,7 +18,7 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 // Initialize services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const storage = getStorage(app);
+export const storage = getStorage(app, "gs://shreshta-2026.firebasestorage.app");
 export const googleProvider = new GoogleAuthProvider();
 
 // Google Sheets Web App URL
