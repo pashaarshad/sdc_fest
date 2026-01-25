@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { getEventById, allEvents } from "@/data/events";
-import EventPageClient, { EventTeamsSection } from "@/components/EventPageClient";
+import EventPageClient from "@/components/EventPageClient";
 
 export function generateStaticParams() {
     return allEvents.map((event) => ({ id: event.id }));
@@ -142,9 +142,6 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                                 ))}
                             </ul>
                         </div>
-
-                        {/* Registered Teams */}
-                        <EventTeamsSection eventId={event.id} eventName={event.title} />
                     </div>
 
                     {/* Sidebar */}
