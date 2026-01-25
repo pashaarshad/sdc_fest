@@ -751,12 +751,31 @@ export default function AdminDashboard() {
                 }
 
                 @media (max-width: 768px) {
-                    .header-title { font-size: 18px; }
-                    .stats-grid { grid-template-columns: 1fr 1fr; }
+                    .header-title { font-size: 16px; width: 100%; justify-content: space-between; }
+                    .header-title span:last-child { display: none; } /* Hide text logo on super small if needed, for now just edit mode badge */
+                    .edit-mode-badge { display: none; }
+                    .stats-grid { grid-template-columns: 1fr; gap: 12px; }
                     .filter-select { width: 100%; }
-                    .header-actions { flex-wrap: wrap; }
-                    .edit-mode-badge { display: none; } /* Hide on mobile to save space */
+                    .header-actions { position: fixed; bottom: 20px; right: 20px; z-index: 999; flex-direction: column-reverse; gap: 10px; }
+                    .logout-btn { padding: 8px 14px; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); } 
+                    .edit-btn {  padding: 8px 14px; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); background: #1a1a1f; color: #d4a843; border-color: #d4a843; }
+
                     .modal-grid { grid-template-columns: 1fr; gap: 16px; }
+                    
+                    /* Hide Desktop Table parts on Mobile */
+                    .desktop-only, .desktop-table-body { display: none; }
+                    
+                    /* Show Mobile Body */
+                    .mobile-only-body { display: table-row-group; }
+                    
+                    /* Adjust table for card view */
+                    .registrations-table { display: block; }
+                    .mobile-card-row { display: block; border-bottom: 1px solid rgba(255,255,255,0.08); }
+                    .mobile-card-row:last-child { border-bottom: none; }
+                }
+
+                @media (min-width: 769px) {
+                     .mobile-only-body { display: none; }
                 }
             `}</style>
 
@@ -1228,20 +1247,20 @@ export default function AdminDashboard() {
                         ) : (
                             <div className="mobile-scroll">
                                 <table className="registrations-table">
-                                    <thead>
+                                    <thead className="desktop-only">
                                         <tr>
                                             <th>#</th>
                                             <th>Event</th>
                                             <th>College</th>
                                             <th>Email</th>
-                                            <th className="hide-mobile">Members</th>
-                                            <th className="hide-mobile">Fee</th>
-                                            <th className="hide-mobile">UTR Number</th>
-                                            <th className="hide-mobile">Status</th>
-                                            <th className="hide-mobile">Date</th>
+                                            <th>Members</th>
+                                            <th>Fee</th>
+                                            <th>UTR Number</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="desktop-table-body">
                                         {filteredRegistrations.map((reg) => {
                                             return (
                                                 <tr key={`${reg.eventId}-${reg.id}`} onClick={() => handleRowClick(reg)}>
@@ -1257,7 +1276,7 @@ export default function AdminDashboard() {
                                                     <td>
                                                         <span className="email-text">{reg.email}</span>
                                                     </td>
-                                                    <td className="hide-mobile">
+                                                    <td>
                                                         {reg.members?.map((member, idx) => (
                                                             <div key={idx} className="member-item">
                                                                 <span className="member-name">{member.name}</span>
@@ -1265,11 +1284,11 @@ export default function AdminDashboard() {
                                                             </div>
                                                         ))}
                                                     </td>
-                                                    <td className="hide-mobile">{reg.registrationFee}</td>
-                                                    <td className="hide-mobile">
+                                                    <td>{reg.registrationFee}</td>
+                                                    <td>
                                                         <span className="utr-number">{reg.utrNumber}</span>
                                                     </td>
-                                                    <td className="hide-mobile">
+                                                    <td>
                                                         <span
                                                             className={`status-select ${reg.paymentStatus === "completed" ? "status-completed" : "status-pending"}`}
                                                             style={{ padding: '6px 10px', display: 'inline-block' }}
@@ -1277,12 +1296,50 @@ export default function AdminDashboard() {
                                                             {reg.paymentStatus === "completed" ? "Verified" : "Pending"}
                                                         </span>
                                                     </td>
-                                                    <td className="hide-mobile">
+                                                    <td>
                                                         <span className="date-text">{formatDate(reg.registeredAt)}</span>
                                                     </td>
                                                 </tr>
                                             );
                                         })}
+                                    </tbody>
+                                    {/* Mobile View - Cards Logic */}
+                                    <tbody className="mobile-only-body">
+                                        {filteredRegistrations.map((reg) => (
+                                            <tr key={`${reg.eventId}-${reg.id}-mobile`} onClick={() => handleRowClick(reg)} className="mobile-card-row">
+                                                <td style={{ display: 'block', width: '100%', padding: '16px' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                                                        <span className="team-badge">{reg.teamNumber}</span>
+                                                        <span
+                                                            className={`status-select ${reg.paymentStatus === "completed" ? "status-completed" : "status-pending"}`}
+                                                            style={{ padding: '4px 8px', fontSize: '11px' }}
+                                                        >
+                                                            {reg.paymentStatus === "completed" ? "Verified" : "Pending"}
+                                                        </span>
+                                                    </div>
+
+                                                    <div style={{ marginBottom: '8px' }}>
+                                                        <span className="event-tag" style={{ fontSize: '12px' }}>{reg.eventName}</span>
+                                                    </div>
+
+                                                    <div style={{ marginBottom: '4px', fontWeight: 500, color: '#fff' }}>
+                                                        {reg.collegeName}
+                                                    </div>
+                                                    <div style={{ marginBottom: '12px', fontSize: '12px', color: '#71717a' }}>
+                                                        {reg.email}
+                                                    </div>
+
+                                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '8px' }}>
+                                                        {reg.members?.map((member, idx) => (
+                                                            <div key={idx} className="member-item" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                                <span className="member-name" style={{ fontSize: '13px' }}>{member.name}</span>
+                                                                <span className="member-phone">{member.phone}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
