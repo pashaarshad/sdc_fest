@@ -491,6 +491,17 @@ export default function AdminDashboard() {
                 .status-pending { background: rgba(234, 179, 8, 0.15); color: #fbbf24; border: 1px solid rgba(234, 179, 8, 0.3); }
                 .status-completed { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
 
+                /* Fix for dropdown options background */
+                select option {
+                    background-color: #1a1a1f;
+                    color: #fff;
+                    padding: 10px;
+                }
+                
+                /* Specific colors for status options */
+                .status-select option[value="pending"] { color: #fbbf24; }
+                .status-select option[value="completed"] { color: #4ade80; }
+
                 .date-text { font-size: 12px; color: #71717a; }
 
                 .loading-container { display: flex; align-items: center; justify-content: center; padding: 80px 20px; }
@@ -542,40 +553,48 @@ export default function AdminDashboard() {
                 .modal-overlay {
                     position: fixed;
                     inset: 0;
-                    background: rgba(0, 0, 0, 0.8);
+                    background: rgba(0, 0, 0, 0.85);
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     z-index: 1000;
                     padding: 20px;
-                    backdrop-filter: blur(5px);
+                    backdrop-filter: blur(8px);
                 }
 
                 .modal-box {
-                    background: #1a1a1f;
-                    border: 1px solid rgba(212, 168, 67, 0.3);
-                    border-radius: 16px;
-                    padding: 24px;
-                    max-width: 500px;
+                    background: #141418;
+                    border: 1px solid rgba(212, 168, 67, 0.2);
+                    border-radius: 20px;
+                    padding: 32px;
+                    max-width: 700px;
                     width: 100%;
                     max-height: 90vh;
                     overflow-y: auto;
                     position: relative;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
                 }
 
                 .modal-close {
                     position: absolute;
-                    top: 16px;
-                    right: 16px;
-                    font-size: 24px;
+                    top: 20px;
+                    right: 20px;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.05);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     color: #71717a;
                     cursor: pointer;
-                    background: none;
                     border: none;
+                    transition: all 0.2s;
                 }
+                .modal-close:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
 
-                .modal-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 24px; padding-right: 20px; }
-                .modal-subtitle { font-size: 14px; color: #71717a; margin-bottom: 24px; }
+                .modal-title { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 8px; padding-right: 20px; }
+                .modal-subtitle { font-size: 14px; color: #71717a; margin-bottom: 24px; font-weight: 500;}
                 .pin-input { width: 100%; padding: 16px; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; font-size: 24px; font-family: monospace; color: #fff; text-align: center; letter-spacing: 8px; outline: none; }
                 .pin-input:focus { border-color: #d4a843; }
                 .pin-error { color: #fca5a5; font-size: 14px; margin-top: 12px; }
@@ -585,10 +604,54 @@ export default function AdminDashboard() {
                 .modal-btn.secondary { background: rgba(255, 255, 255, 0.1); color: #fff; }
                 .edit-mode-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(212, 168, 67, 0.2); border: 1px solid rgba(212, 168, 67, 0.4); border-radius: 6px; color: #d4a843; font-size: 12px; font-weight: 600; margin-left: 12px; }
 
-                /* Details Rows */
-                .detail-row { margin-bottom: 16px; }
-                .detail-label { font-size: 12px; color: #71717a; text-transform: uppercase; margin-bottom: 6px; font-weight: 600; }
-                .detail-value { font-size: 15px; color: #fff; }
+                /* Details Styling */
+                .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; }
+                .full-width { grid-column: 1 / -1; }
+                
+                .detail-group {
+                    background: rgba(255, 255, 255, 0.02);
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    border-radius: 12px;
+                    padding: 16px;
+                }
+                
+                .detail-label { 
+                    font-size: 11px; 
+                    color: #71717a; 
+                    text-transform: uppercase; 
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px; 
+                    font-weight: 600; 
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                
+                .detail-value { font-size: 15px; color: #fff; font-weight: 500; word-break: break-all; }
+                
+                .detail-value.highlight { color: #d4a843; font-size: 18px; font-weight: 700; }
+                
+                .member-chip {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 8px 12px;
+                    background: rgba(255, 255, 255, 0.03);
+                    border-radius: 8px;
+                    margin-bottom: 6px;
+                }
+                .member-chip:last-child { margin-bottom: 0; }
+                .member-chip-name { font-weight: 500; font-size: 14px; }
+                .member-chip-phone { font-size: 12px; color: #71717a; font-family: monospace; }
+
+                .utr-display {
+                    font-family: monospace;
+                    background: rgba(0, 0, 0, 0.3);
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    border: 1px dashed rgba(255, 255, 255, 0.1);
+                    color: #d4a843;
+                }
 
                 @media (max-width: 768px) {
                     .header-title { font-size: 18px; }
@@ -596,6 +659,7 @@ export default function AdminDashboard() {
                     .filter-select { width: 100%; }
                     .header-actions { flex-wrap: wrap; }
                     .edit-mode-badge { display: none; } /* Hide on mobile to save space */
+                    .modal-grid { grid-template-columns: 1fr; gap: 16px; }
                 }
             `}</style>
 
@@ -714,54 +778,112 @@ export default function AdminDashboard() {
                             </div>
                         ) : (
                             <div className="details-container">
-                                <div className="detail-row">
-                                    <div className="detail-label">Team ID</div>
-                                    <div className="detail-value text-gold">#{selectedRegistration.teamNumber}</div>
-                                </div>
-                                <div className="detail-row">
-                                    <div className="detail-label">Event</div>
-                                    <div className="detail-value">{selectedRegistration.eventName}</div>
-                                </div>
-                                <div className="detail-row">
-                                    <div className="detail-label">College</div>
-                                    <div className="detail-value">{selectedRegistration.collegeName}</div>
-                                </div>
-                                <div className="detail-row">
-                                    <div className="detail-label">Contact Email</div>
-                                    <div className="detail-value">{selectedRegistration.email}</div>
-                                </div>
-                                <div className="detail-row">
-                                    <div className="detail-label">Members</div>
-                                    {selectedRegistration.members?.map((m, i) => (
-                                        <div key={i} className="detail-value" style={{ marginBottom: '4px' }}>
-                                            {m.name} <span style={{ color: '#71717a', fontSize: '13px' }}>({m.phone})</span>
+                                <div className="modal-grid">
+                                    {/* Team ID */}
+                                    <div className="detail-group">
+                                        <div className="detail-label">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                            </svg>
+                                            Team ID
                                         </div>
-                                    ))}
-                                </div>
-                                <div className="detail-row">
-                                    <div className="detail-label">Registration Fee</div>
-                                    <div className="detail-value">{selectedRegistration.registrationFee}</div>
-                                </div>
-                                <div className="detail-row">
-                                    <div className="detail-label">UTR Number</div>
-                                    <div className="detail-value font-mono bg-white/5 p-2 rounded inline-block">
-                                        {selectedRegistration.utrNumber}
+                                        <div className="detail-value highlight">#{selectedRegistration.teamNumber}</div>
                                     </div>
-                                </div>
-                                <div className="detail-row">
-                                    <div className="detail-label">Payment Status</div>
-                                    <select
-                                        className={`status-select ${selectedRegistration.paymentStatus === "completed" ? "status-completed" : "status-pending"}`}
-                                        value={selectedRegistration.paymentStatus}
-                                        onChange={(e) => updatePaymentStatus(selectedRegistration.eventId, selectedRegistration.id, e.target.value)}
-                                    >
-                                        <option value="pending">Pending Verification</option>
-                                        <option value="completed">Verified</option>
-                                    </select>
-                                </div>
-                                <div className="detail-row">
-                                    <div className="detail-label">Registered Date</div>
-                                    <div className="detail-value">{formatDate(selectedRegistration.registeredAt)}</div>
+
+                                    {/* Registration Date */}
+                                    <div className="detail-group">
+                                        <div className="detail-label">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            Registration Date
+                                        </div>
+                                        <div className="detail-value">{formatDate(selectedRegistration.registeredAt)}</div>
+                                    </div>
+
+                                    {/* Event - Full Width */}
+                                    <div className="detail-group full-width">
+                                        <div className="detail-label">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                            </svg>
+                                            Event Name
+                                        </div>
+                                        <div className="detail-value" style={{ fontSize: '18px', fontWeight: '600' }}>
+                                            {selectedRegistration.eventName}
+                                        </div>
+                                    </div>
+
+                                    {/* College */}
+                                    <div className="detail-group">
+                                        <div className="detail-label">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                            </svg>
+                                            College
+                                        </div>
+                                        <div className="detail-value">{selectedRegistration.collegeName}</div>
+                                    </div>
+
+                                    {/* Email */}
+                                    <div className="detail-group">
+                                        <div className="detail-label">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            </svg>
+                                            Contact Email
+                                        </div>
+                                        <div className="detail-value">{selectedRegistration.email}</div>
+                                    </div>
+
+                                    {/* Members - Full Width */}
+                                    <div className="detail-group full-width">
+                                        <div className="detail-label">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                            </svg>
+                                            Team Members
+                                        </div>
+                                        <div className="members-grid">
+                                            {selectedRegistration.members?.map((m, i) => (
+                                                <div key={i} className="member-chip">
+                                                    <span className="member-chip-name">{m.name}</span>
+                                                    <span className="member-chip-phone">{m.phone}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Payment Section - Full Width Grid */}
+                                    <div className="detail-group full-width" style={{ background: 'rgba(212, 168, 67, 0.05)', borderColor: 'rgba(212, 168, 67, 0.2)' }}>
+                                        <div className="modal-grid" style={{ marginTop: 0 }}>
+                                            {/* Fee */}
+                                            <div>
+                                                <div className="detail-label">Registration Fee</div>
+                                                <div className="detail-value" style={{ fontSize: '20px', color: '#d4a843' }}>{selectedRegistration.registrationFee}</div>
+                                            </div>
+
+                                            {/* UTR */}
+                                            <div>
+                                                <div className="detail-label">UTR Number</div>
+                                                <div className="utr-display">{selectedRegistration.utrNumber}</div>
+                                            </div>
+
+                                            {/* Status */}
+                                            <div className="full-width" style={{ marginTop: '10px' }}>
+                                                <div className="detail-label">Payment Status</div>
+                                                <select
+                                                    className={`status-select ${selectedRegistration.paymentStatus === "completed" ? "status-completed" : "status-pending"}`}
+                                                    value={selectedRegistration.paymentStatus}
+                                                    onChange={(e) => updatePaymentStatus(selectedRegistration.eventId, selectedRegistration.id, e.target.value)}
+                                                    style={{ width: '100%', padding: '12px' }}
+                                                >
+                                                    <option value="pending">⚠️ Pending Verification</option>
+                                                    <option value="completed">✅ Verified</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}

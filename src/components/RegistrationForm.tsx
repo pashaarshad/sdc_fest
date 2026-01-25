@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { signInWithPopup, User } from "firebase/auth";
 import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
 import { auth, db, googleProvider, GOOGLE_SHEETS_URL, UPI_ID, UPI_NAME } from "@/lib/firebase";
@@ -45,6 +46,33 @@ export default function RegistrationForm({
     const [error, setError] = useState("");
     const [teamNumber, setTeamNumber] = useState<number | null>(null);
     const [timeLeft, setTimeLeft] = useState(300);
+    const [mounted, setMounted] = useState(false);
+    const [canCompletePayment, setCanCompletePayment] = useState(false);
+    const [paymentDelay, setPaymentDelay] = useState(15);
+
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+
+    // Timer for payment completion button
+    useEffect(() => {
+        if (step === "payment") {
+            setCanCompletePayment(false);
+            setPaymentDelay(15);
+            const interval = setInterval(() => {
+                setPaymentDelay((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(interval);
+                        setCanCompletePayment(true);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [step]);
 
     const getRequiredMembers = (): number => {
         if (teamSize.includes("8 + 2") || teamSize.includes("8+2")) return 10;
@@ -204,8 +232,20 @@ export default function RegistrationForm({
         setError("");
         setTeamNumber(null);
         setUser(null);
+        document.body.style.overflow = 'unset';
         onClose();
     };
+
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
 
     const upiUrl = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${feeAmount}&cu=INR&tn=${encodeURIComponent(`SHRESHTA 2026 - ${eventName}`)}`;
 
@@ -216,15 +256,15 @@ export default function RegistrationForm({
         { name: "Paytm", icon: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", url: `paytmmp://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${feeAmount}&cu=INR` },
     ];
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
+    return createPortal(
         <>
             <style jsx>{`
                 .registration-overlay {
                     position: fixed;
                     inset: 0;
-                    z-index: 9999;
+                    z-index: 999999;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -232,6 +272,7 @@ export default function RegistrationForm({
                     background: rgba(0, 0, 0, 0.9);
                     backdrop-filter: blur(10px);
                     animation: fadeIn 0.3s ease;
+                    overscroll-behavior: contain;
                 }
 
                 @keyframes fadeIn {
@@ -950,7 +991,8 @@ export default function RegistrationForm({
                                 </div>
 
                                 {/* Payment App Buttons */}
-                                <div className="payment-apps">
+                                {/* Payment App Buttons - Mobile Only */}
+                                <div className="payment-apps md:hidden">
                                     {paymentApps.map((app) => (
                                         <a key={app.name} href={app.url} className="payment-app-btn">
                                             <img src={app.icon} alt={app.name} className="payment-app-icon" />
@@ -966,8 +1008,14 @@ export default function RegistrationForm({
                                             Restart Timer
                                         </button>
                                     </div>
+                                ) : !canCompletePayment ? (
+                                    <div className="w-full py-4 text-center rounded-xl bg-white/5 border border-white/10 text-zinc-400">
+                                        <p className="text-sm font-medium animate-pulse">
+                                            Please complete payment... Confirmation enabled in {paymentDelay}s
+                                        </p>
+                                    </div>
                                 ) : (
-                                    <button className="success-btn" onClick={handlePaymentDone}>
+                                    <button className="success-btn animate-fade-in" onClick={handlePaymentDone}>
                                         <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
@@ -1022,6 +1070,7 @@ export default function RegistrationForm({
                     </div>
                 </div>
             </div>
-        </>
+        </>,
+        document.body
     );
 }
