@@ -79,16 +79,16 @@ export default function Navbar() {
                         ) : user ? (
                             <div className="flex items-center gap-3">
                                 {/* User Info */}
-                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-                                    <div className="w-7 h-7 rounded-full bg-[#d4a843] flex items-center justify-center text-xs font-bold text-black">
+                                <div className="flex items-center gap-3 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10">
+                                    <div className="w-8 h-8 rounded-full bg-[#d4a843] flex items-center justify-center text-sm font-bold text-black">
                                         {user.displayName?.charAt(0) || user.email?.charAt(0) || "U"}
                                     </div>
-                                    <span className="text-sm text-zinc-300 max-w-[120px] truncate">
-                                        {user.displayName?.split(" ")[0] || user.email?.split("@")[0]}
+                                    <span className="text-sm text-zinc-300 font-medium">
+                                        {user.displayName || user.email?.split("@")[0]}
                                     </span>
                                     <button
                                         onClick={handleLogout}
-                                        className="ml-1 p-1 hover:bg-white/10 rounded-full transition-colors"
+                                        className="ml-1 p-1.5 hover:bg-white/10 rounded-lg transition-colors"
                                         title="Logout"
                                     >
                                         <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,8 +99,11 @@ export default function Navbar() {
 
                                 {/* Show registered event or register button */}
                                 {registeredEvent ? (
-                                    <div className="px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-sm font-medium">
-                                        ✓ Registered
+                                    <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400 text-sm font-semibold">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Registered
                                     </div>
                                 ) : (
                                     <Link href="/#events" className="btn btn-primary">
@@ -115,9 +118,9 @@ export default function Navbar() {
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={handleLogin}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all text-sm font-medium"
+                                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all text-sm font-semibold"
                                 >
-                                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                                    <svg className="w-5 h-5" viewBox="0 0 24 24">
                                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
@@ -179,8 +182,11 @@ export default function Navbar() {
                                     </div>
                                 </div>
                                 {registeredEvent ? (
-                                    <div className="w-full py-3 px-4 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400 text-sm font-medium text-center mb-3">
-                                        ✓ Registered for {registeredEvent}
+                                    <div className="flex items-center justify-center gap-2 w-full py-3.5 px-5 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400 text-sm font-semibold mb-3">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Registered for {registeredEvent}
                                     </div>
                                 ) : (
                                     <Link
