@@ -22,6 +22,7 @@ export interface Event {
     };
     teamSize: string;
     registrationFee: string;
+    maxTeamsPerCollege?: string;
 }
 
 // ============ MANAGEMENT EVENTS ============
@@ -166,7 +167,7 @@ export const itEvents: Event[] = [
         coordinatorPhone: "9845882275",
         category: "it",
         date: "Feb 17, 2026",
-        time: "8:30 AM",
+        time: "8:00 AM",
         venue: "SDC Campus",
         image: "/nidhi_anveshanam_final.png",
         rules: [
@@ -177,6 +178,7 @@ export const itEvents: Event[] = [
         ],
         teamSize: "4 Members",
         registrationFee: "₹500/Team",
+        maxTeamsPerCollege: "Only 3 teams per college",
     },
     {
         id: "e-sports",
