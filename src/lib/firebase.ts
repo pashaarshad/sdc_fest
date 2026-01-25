@@ -22,7 +22,7 @@ export const storage = getStorage(app, "gs://shreshta-2026.firebasestorage.app")
 export const googleProvider = new GoogleAuthProvider();
 
 // Google Sheets Web App URL
-export const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby7oi4wY0KDJ_-mWM7oMoDGmZwpY1N1BvER8-ZP_vmQBJIlcOMB8VHTSLLJIGGxOyVzoA/exec";
+export const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxvCdvdq-FbgKBX2Y2bJrCZztZURGxqX-McYzgZhkhqyF7jXAqqIZO4kqTQ0KmHs3Le/exec";
 
 // UPI Configuration
 export const UPI_ID = "7760554350@axl";

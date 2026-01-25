@@ -234,13 +234,41 @@ export default function RegistrationForm({
             await addDoc(registrationsRef, registrationData);
 
             try {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { screenshotUrl: _, ...sheetData } = registrationData;
+                // Convert screenshot to Base64 for Google Drive backup
+                let base64Image = "";
+                let mimeType = "";
+                if (screenshot) {
+                    try {
+                        const toBase64 = (file: File) => new Promise<string>((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(file);
+                            reader.onload = () => resolve(reader.result as string);
+                            reader.onerror = error => reject(error);
+                        });
+                        const result = await toBase64(screenshot);
+                        // Result looks like "data:image/jpeg;base64,....."
+                        // split to get just the base64 part if needed, but Apps Script might want the whole thing or just the part. 
+                        // Usually easier to send parts.
+                        const matches = result.match(/^data:(.+);base64,(.+)$/);
+                        if (matches && matches.length === 3) {
+                            mimeType = matches[1];
+                            base64Image = matches[2];
+                        }
+                    } catch (e) {
+                        console.error("Base64 conversion failed", e);
+                    }
+                }
+
                 await fetch(GOOGLE_SHEETS_URL, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ ...sheetData, registeredAt: new Date().toISOString() }),
+                    body: JSON.stringify({
+                        ...registrationData,
+                        registeredAt: new Date().toISOString(),
+                        fileData: base64Image,
+                        mimeType: mimeType
+                    }),
                 });
             } catch (sheetError) {
                 console.error("Google Sheets sync failed:", sheetError);

@@ -45,6 +45,12 @@ export default function AdminDashboard() {
     const [editingRow, setEditingRow] = useState<string | null>(null);
     const [editData, setEditData] = useState<Registration | null>(null);
 
+    // Delete Confirmation State
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deletePin, setDeletePin] = useState("");
+    const [deleteError, setDeleteError] = useState("");
+    const [regToDelete, setRegToDelete] = useState<string | null>(null);
+
     // Details Modal State
     const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
 
@@ -236,6 +242,52 @@ export default function AdminDashboard() {
     const handleLogout = () => {
         sessionStorage.removeItem("adminLoggedIn");
         router.push("/admin");
+    };
+
+    // Delete Handlers
+    const handleDeleteRequest = (regId: string) => {
+        if (confirm("Are you sure you want to DELETE this registration? This action cannot be undone.")) {
+            setRegToDelete(regId);
+            setShowDeleteConfirm(true);
+        }
+    };
+
+    const handleBackdropClick = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget) {
+            setShowDeleteConfirm(false);
+            setDeletePin("");
+            setDeleteError("");
+        }
+    };
+
+    const confirmDelete = async () => {
+        if (deletePin !== EDIT_PIN) {
+            setDeleteError("Incorrect PIN");
+            return;
+        }
+
+        if (regToDelete && editData) {
+            await executeDelete(regToDelete, editData.eventId);
+        }
+    };
+
+    const executeDelete = async (regId: string, eventId: string) => {
+        try {
+            await deleteDoc(doc(db, "registrations", eventId, "teams", regId));
+
+            // Clean up states
+            setShowDeleteConfirm(false);
+            setDeletePin("");
+            setDeleteError("");
+            setRegToDelete(null);
+            closeModal(); // Close the edit modal
+
+            // Refresh data
+            window.location.reload();
+        } catch (error) {
+            console.error("Error deleting document:", error);
+            alert("Failed to delete registration.");
+        }
     };
 
     const formatDate = (timestamp: any) => {
@@ -693,6 +745,40 @@ export default function AdminDashboard() {
                 </div>
             )}
 
+            {/* DELETE PIN Modal */}
+            {showDeleteConfirm && (
+                <div className="modal-overlay" onClick={handleBackdropClick}>
+                    <div className="modal-box" style={{ maxWidth: '400px', border: '1px solid rgba(239, 68, 68, 0.4)' }}>
+                        <button className="modal-close" onClick={() => { setShowDeleteConfirm(false); setDeletePin(""); }}>×</button>
+                        <h3 className="modal-title" style={{ color: '#fca5a5' }}>⚠️ Confirm Deletion</h3>
+                        <p className="modal-subtitle">Enter PIN to permanently delete this registration.</p>
+                        <input
+                            type="password"
+                            className="pin-input"
+                            value={deletePin}
+                            onChange={(e) => setDeletePin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                            placeholder="••••"
+                            maxLength={4}
+                            autoFocus
+                            style={{ borderColor: 'rgba(239, 68, 68, 0.4)' }}
+                        />
+                        {deleteError && <p className="pin-error">{deleteError}</p>}
+                        <div className="modal-btns">
+                            <button className="modal-btn secondary" onClick={() => { setShowDeleteConfirm(false); setDeletePin(""); }}>
+                                Cancel
+                            </button>
+                            <button
+                                className="modal-btn"
+                                onClick={confirmDelete}
+                                style={{ background: '#ef4444', color: '#fff' }}
+                            >
+                                DELETE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Details Modal */}
             {selectedRegistration && (
                 <div className="modal-overlay">
@@ -772,9 +858,18 @@ export default function AdminDashboard() {
                                         <option value="completed">Verified</option>
                                     </select>
                                 </div>
-                                <div className="modal-btns">
-                                    <button className="modal-btn secondary" onClick={closeModal}>Cancel</button>
-                                    <button className="modal-btn primary" onClick={saveEdits}>Save Changes</button>
+                                <div className="modal-btns" style={{ justifyContent: 'space-between' }}>
+                                    <button
+                                        className="modal-btn"
+                                        style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.4)' }}
+                                        onClick={() => editData && handleDeleteRequest(editData.id)}
+                                    >
+                                        Delete Registration
+                                    </button>
+                                    <div style={{ display: 'flex', gap: '12px' }}>
+                                        <button className="modal-btn secondary" onClick={closeModal}>Cancel</button>
+                                        <button className="modal-btn primary" onClick={saveEdits}>Save Changes</button>
+                                    </div>
                                 </div>
                             </div>
                         ) : (
