@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signInWithPopup, signOut, User } from "firebase/auth";
+import { signInWithPopup, User } from "firebase/auth";
 import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
 import { auth, db, googleProvider, GOOGLE_SHEETS_URL, UPI_ID, UPI_NAME } from "@/lib/firebase";
 import { QRCodeSVG } from "qrcode.react";
+import { useAuth } from "@/context/AuthContext";
 
 interface RegistrationFormProps {
     eventId: string;
@@ -34,11 +35,12 @@ export default function RegistrationForm({
     onClose,
     onSuccess
 }: RegistrationFormProps) {
+    const { user: globalUser } = useAuth();
     const [step, setStep] = useState<RegistrationStep>("auth");
     const [user, setUser] = useState<User | null>(null);
     const [collegeName, setCollegeName] = useState("");
     const [members, setMembers] = useState<Member[]>([{ name: "", phone: "" }]);
-    const [transactionId, setTransactionId] = useState("");
+    const [utrNumber, setUtrNumber] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [teamNumber, setTeamNumber] = useState<number | null>(null);
@@ -60,6 +62,14 @@ export default function RegistrationForm({
     };
 
     const feeAmount = getFeeAmount();
+
+    // Auto-skip auth if already logged in
+    useEffect(() => {
+        if (isOpen && globalUser && step === "auth") {
+            setUser(globalUser);
+            setStep("form");
+        }
+    }, [isOpen, globalUser, step]);
 
     useEffect(() => {
         const initialMembers: Member[] = [];
@@ -135,8 +145,8 @@ export default function RegistrationForm({
     };
 
     const handleSubmit = async () => {
-        if (!transactionId.trim()) {
-            setError("Please enter the UPI Transaction ID");
+        if (!utrNumber.trim()) {
+            setError("Please enter the UTR Number");
             return;
         }
 
@@ -157,7 +167,7 @@ export default function RegistrationForm({
                 collegeName,
                 members,
                 registrationFee,
-                transactionId,
+                utrNumber,
                 paymentStatus: "pending",
                 registeredAt: Timestamp.now(),
                 userId: user?.uid || ""
@@ -190,13 +200,10 @@ export default function RegistrationForm({
     const handleClose = () => {
         setStep("auth");
         setCollegeName("");
-        setTransactionId("");
+        setUtrNumber("");
         setError("");
         setTeamNumber(null);
-        if (user) {
-            signOut(auth);
-            setUser(null);
-        }
+        setUser(null);
         onClose();
     };
 
@@ -979,16 +986,16 @@ export default function RegistrationForm({
                                     </svg>
                                 </div>
                                 <h3 className="payment-title">Payment Confirmation</h3>
-                                <p style={{ color: '#71717a', marginBottom: '24px' }}>Enter your UPI Transaction ID to complete registration</p>
+                                <p style={{ color: '#71717a', marginBottom: '24px' }}>Enter your UTR Number to complete registration</p>
 
                                 <input
                                     type="text"
                                     className="transaction-input"
-                                    value={transactionId}
-                                    onChange={(e) => setTransactionId(e.target.value)}
-                                    placeholder="Enter Transaction ID"
+                                    value={utrNumber}
+                                    onChange={(e) => setUtrNumber(e.target.value)}
+                                    placeholder="Enter UTR Number"
                                 />
-                                <p className="transaction-hint">You can find this in your UPI app&apos;s transaction history</p>
+                                <p className="transaction-hint">You can find the UTR Number in your UPI app&apos;s transaction history</p>
 
                                 <button className="primary-btn" onClick={handleSubmit} disabled={loading}>
                                     {loading ? <div className="spinner" style={{ borderColor: 'rgba(0,0,0,0.2)', borderTopColor: '#000' }} /> : "Submit Registration"}
