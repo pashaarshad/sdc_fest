@@ -234,11 +234,13 @@ export default function RegistrationForm({
             await addDoc(registrationsRef, registrationData);
 
             try {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { screenshotUrl: _, ...sheetData } = registrationData;
                 await fetch(GOOGLE_SHEETS_URL, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ ...registrationData, registeredAt: new Date().toISOString() }),
+                    body: JSON.stringify({ ...sheetData, registeredAt: new Date().toISOString() }),
                 });
             } catch (sheetError) {
                 console.error("Google Sheets sync failed:", sheetError);
