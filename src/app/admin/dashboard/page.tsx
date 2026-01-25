@@ -62,6 +62,16 @@ export default function AdminDashboard() {
     // Copied State
     const [copiedUtr, setCopiedUtr] = useState<string | null>(null);
 
+    // Export State
+    const [showExportModal, setShowExportModal] = useState(false);
+    const [exportType, setExportType] = useState<'excel' | 'pdf'>('excel');
+    const [exportFields, setExportFields] = useState({
+        fee: true,
+        utr: true,
+        status: true,
+        date: true
+    });
+
     // Check authentication
     useEffect(() => {
         const isLoggedIn = sessionStorage.getItem("adminLoggedIn");
@@ -348,90 +358,48 @@ export default function AdminDashboard() {
         });
     };
 
+    const getExportData = (data: Registration[]) => {
+        return data.map(r => {
+            const baseData: any = {
+                "ID": r.teamNumber,
+                "Event": r.eventName,
+                "College": r.collegeName,
+                "Email": r.email,
+            };
+
+            // Add Member Details Columns
+            const maxMembers = 5;
+            for (let i = 0; i < maxMembers; i++) {
+                const member = r.members[i];
+                if (member) {
+                    baseData[`M${i + 1} Name`] = member.name;
+                    baseData[`M${i + 1} #`] = member.phone;
+                } else {
+                    baseData[`M${i + 1} Name`] = "";
+                    baseData[`M${i + 1} #`] = "";
+                }
+            }
+
+            // Optional Fields
+            if (exportFields.fee) baseData["Fee"] = r.registrationFee;
+            if (exportFields.utr) baseData["UTR"] = r.utrNumber;
+            if (exportFields.status) baseData["Status"] = r.paymentStatus;
+            if (exportFields.date) baseData["Date"] = formatDate(r.registeredAt).split(',')[0];
+
+            return baseData;
+        });
+    };
+
     // Export to Excel
     const exportToExcel = () => {
         const wb = XLSX.utils.book_new();
         const exportDate = new Date().toISOString().split('T')[0];
 
-        if (selectedEvent === "all") {
-            // Group by Event
-            const grouped = registrations.reduce((acc, curr) => {
-                const key = curr.eventName || "Unknown";
-                if (!acc[key]) acc[key] = [];
-                acc[key].push(curr);
-                return acc;
-            }, {} as Record<string, Registration[]>);
-
-            Object.keys(grouped).forEach(eventName => {
-                const sheetData = grouped[eventName].map(r => ({
-                    "Team ID": r.teamNumber,
-                    "College": r.collegeName,
-                    "Email": r.email,
-                    "Phone": r.members[0]?.phone || "",
-                    "Members": r.members.map(m => `${m.name} (${m.phone})`).join(", "),
-                    "Fee": r.registrationFee,
-                    "UTR": r.utrNumber,
-                    "Status": r.paymentStatus,
-                    "Date": formatDate(r.registeredAt).split(',')[0]
-                }));
-                const ws = XLSX.utils.json_to_sheet(sheetData);
-                // Sheet name max length 31
-                const safeName = eventName.replace(/[\[\]\*\/\\\?]/g, "").substring(0, 30);
-                XLSX.utils.book_append_sheet(wb, ws, safeName);
-            });
-        } else {
-            const sheetData = filteredRegistrations.map(r => ({
-                "Team ID": r.teamNumber,
-                "College": r.collegeName,
-                "Email": r.email,
-                "Phone": r.members[0]?.phone || "",
-                "Members": r.members.map(m => `${m.name} (${m.phone})`).join(", "),
-                "Fee": r.registrationFee,
-                "UTR": r.utrNumber,
-                "Status": r.paymentStatus,
-                "Date": formatDate(r.registeredAt).split(',')[0]
-            }));
-            const ws = XLSX.utils.json_to_sheet(sheetData);
-            XLSX.utils.book_append_sheet(wb, ws, "Registrations");
-        }
-
-        XLSX.writeFile(wb, `Shreshta_Registrations_${exportDate}.xlsx`);
-    };
-
-    // Export to PDF
-    const exportToPDF = () => {
-        const doc = new jsPDF();
-        const exportDate = new Date().toISOString().split('T')[0];
-
-        doc.setFontSize(18);
-        doc.text("SHRESHTA 2026 - Registrations", 14, 20);
-        doc.setFontSize(12);
-        doc.text(`Generated on: ${exportDate}`, 14, 28);
-
-        const tableColumn = ["ID", "College", "Email", "Members", "Fee", "UTR", "Status"];
-        let lastY = 35;
-
-        const generateTable = (data: Registration[], startY: number) => {
-            const tableRows = data.map(r => [
-                r.teamNumber,
-                r.collegeName,
-                r.email,
-                r.members.map(m => m.name).join(", "),
-                r.registrationFee,
-                r.utrNumber,
-                r.paymentStatus
-            ]);
-
-            autoTable(doc, {
-                head: [tableColumn],
-                body: tableRows,
-                startY: startY,
-                theme: 'grid',
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [212, 168, 67] }
-            });
-            // @ts-ignore
-            return doc.lastAutoTable.finalY + 10;
+        // Helper to process a batch of registrations for a sheet
+        const processSheet = (regs: Registration[], sheetName: string) => {
+            const formattedData = getExportData(regs);
+            const ws = XLSX.utils.json_to_sheet(formattedData);
+            XLSX.utils.book_append_sheet(wb, ws, sheetName);
         };
 
         if (selectedEvent === "all") {
@@ -443,18 +411,100 @@ export default function AdminDashboard() {
             }, {} as Record<string, Registration[]>);
 
             Object.keys(grouped).forEach(eventName => {
-                // Check if we need a new page
-                if (lastY > 250) {
+                const safeName = eventName.replace(/[\[\]\*\/\\\?]/g, "").substring(0, 30);
+                processSheet(grouped[eventName], safeName);
+            });
+        } else {
+            processSheet(filteredRegistrations, "Registrations");
+        }
+
+        XLSX.writeFile(wb, `Shreshta_Registrations_${exportDate}.xlsx`);
+        setShowExportModal(false);
+    };
+
+    // Export to PDF
+    const exportToPDF = () => {
+        const doc = new jsPDF('l', 'mm', 'a4'); // Landscape for more columns
+        const exportDate = new Date().toISOString().split('T')[0];
+
+        doc.setFontSize(18);
+        doc.text("SHRESHTA 2026 - Registrations", 14, 20);
+        doc.setFontSize(12);
+        doc.text(`Generated on: ${exportDate}`, 14, 28);
+
+        // Define Headers based on config
+        const headers = ["ID", "College", "Email"];
+
+        const maxMembers = 5;
+        for (let i = 0; i < maxMembers; i++) {
+            headers.push(`M${i + 1}`);
+        }
+
+        if (exportFields.fee) headers.push("Fee");
+        if (exportFields.utr) headers.push("UTR");
+        if (exportFields.status) headers.push("Status");
+
+        const generateTable = (data: Registration[], startY: number) => {
+            const tableRows = data.map(r => {
+                const row = [
+                    r.teamNumber.toString(),
+                    r.collegeName,
+                    r.email
+                ];
+
+                // Members
+                for (let i = 0; i < maxMembers; i++) {
+                    const m = r.members[i];
+                    row.push(m ? `${m.name}\n${m.phone}` : "-");
+                }
+
+                if (exportFields.fee) row.push(r.registrationFee);
+                if (exportFields.utr) row.push(r.utrNumber);
+                if (exportFields.status) row.push(r.paymentStatus);
+
+                return row;
+            });
+
+            autoTable(doc, {
+                head: [headers],
+                body: tableRows,
+                startY: startY,
+                theme: 'grid',
+                styles: { fontSize: 7, cellPadding: 1 },
+                headStyles: { fillColor: [212, 168, 67] },
+                columnStyles: {
+                    0: { cellWidth: 10 }, // ID
+                    1: { cellWidth: 35 }, // College
+                    2: { cellWidth: 35 }, // Email
+                    // Members cols auto
+                }
+            });
+            // @ts-ignore
+            return doc.lastAutoTable.finalY + 10;
+        };
+
+        let lastY = 35;
+
+        if (selectedEvent === "all") {
+            const grouped = registrations.reduce((acc, curr) => {
+                const key = curr.eventName || "Unknown";
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(curr);
+                return acc;
+            }, {} as Record<string, Registration[]>);
+
+            Object.keys(grouped).forEach(eventName => {
+                if (lastY > 180) { // Landscape height check
                     doc.addPage();
                     lastY = 20;
                 }
 
                 doc.setFontSize(14);
                 // @ts-ignore
-                doc.setTextColor(212, 168, 67); // Gold color
+                doc.setTextColor(212, 168, 67);
                 doc.text(eventName, 14, lastY);
                 // @ts-ignore
-                doc.setTextColor(0, 0, 0); // Reset color
+                doc.setTextColor(0, 0, 0);
 
                 lastY = generateTable(grouped[eventName], lastY + 5);
             });
@@ -469,6 +519,12 @@ export default function AdminDashboard() {
         }
 
         doc.save(`Shreshta_Registrations_${exportDate}.pdf`);
+        setShowExportModal(false);
+    };
+
+    const handleExportClick = (type: 'excel' | 'pdf') => {
+        setExportType(type);
+        setShowExportModal(true);
     };
 
     // Open Modal Handler
@@ -1294,6 +1350,76 @@ export default function AdminDashboard() {
                 </div>
             )}
 
+            {/* Export Options Modal */}
+            {showExportModal && (
+                <div className="modal-overlay">
+                    <div className="modal-box" style={{ maxWidth: '400px' }}>
+                        <button className="modal-close" onClick={() => setShowExportModal(false)}>×</button>
+                        <h3 className="modal-title">Export Options</h3>
+                        <p className="modal-subtitle">Select fields to include in the {exportType.toUpperCase()} file.</p>
+
+                        <div style={{ display: 'grid', gap: '12px', marginBottom: '24px' }}>
+                            <div className="detail-group" style={{ display: 'flex', alignItems: 'center', opacity: 0.7 }}>
+                                <input type="checkbox" checked={true} disabled style={{ marginRight: '10px' }} />
+                                Basic Info (ID, Event, College, Email, Members)
+                            </div>
+
+                            <label className="detail-group" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={exportFields.fee}
+                                    onChange={(e) => setExportFields({ ...exportFields, fee: e.target.checked })}
+                                    style={{ marginRight: '10px' }}
+                                />
+                                Registration Fee
+                            </label>
+
+                            <label className="detail-group" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={exportFields.utr}
+                                    onChange={(e) => setExportFields({ ...exportFields, utr: e.target.checked })}
+                                    style={{ marginRight: '10px' }}
+                                />
+                                UTR Number
+                            </label>
+
+                            <label className="detail-group" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={exportFields.status}
+                                    onChange={(e) => setExportFields({ ...exportFields, status: e.target.checked })}
+                                    style={{ marginRight: '10px' }}
+                                />
+                                Payment Status
+                            </label>
+
+                            <label className="detail-group" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={exportFields.date}
+                                    onChange={(e) => setExportFields({ ...exportFields, date: e.target.checked })}
+                                    style={{ marginRight: '10px' }}
+                                />
+                                Registration Date
+                            </label>
+                        </div>
+
+                        <div className="modal-btns">
+                            <button className="modal-btn secondary" onClick={() => setShowExportModal(false)}>
+                                Cancel
+                            </button>
+                            <button
+                                className="modal-btn primary"
+                                onClick={exportType === 'excel' ? exportToExcel : exportToPDF}
+                            >
+                                Download {exportType.toUpperCase()}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="dashboard">
                 <header className="dashboard-header">
                     <div className="header-inner">
@@ -1358,7 +1484,7 @@ export default function AdminDashboard() {
 
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <button
-                                onClick={exportToExcel}
+                                onClick={() => handleExportClick('excel')}
                                 style={{
                                     padding: '10px 16px',
                                     background: '#107c41',
@@ -1379,7 +1505,7 @@ export default function AdminDashboard() {
                                 Excel
                             </button>
                             <button
-                                onClick={exportToPDF}
+                                onClick={() => handleExportClick('pdf')}
                                 style={{
                                     padding: '10px 16px',
                                     background: '#b91c1c',
