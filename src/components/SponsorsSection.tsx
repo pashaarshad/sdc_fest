@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 const sponsors = [
     { id: 1, image: "/ad1.jpeg", name: "Sponsor 1" },
     { id: 2, image: "/sp2.jfif", name: "Sponsor 2" },
+    { id: 2, image: "/gv_creation.png", name: "Sponsor 3" }
 ];
 
 const SponsorsSection = () => {
