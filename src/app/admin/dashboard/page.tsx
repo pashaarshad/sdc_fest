@@ -395,7 +395,7 @@ export default function AdminDashboard() {
         const wb = XLSX.utils.book_new();
         const exportDate = new Date().toISOString().split('T')[0];
 
-        // Helper to process a batch of registrations for a sheet
+        // Helper to process a batch of registrations for a sheet  
         const processSheet = (regs: Registration[], sheetName: string) => {
             const formattedData = getExportData(regs);
             const ws = XLSX.utils.json_to_sheet(formattedData);
