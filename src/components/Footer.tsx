@@ -69,10 +69,10 @@ export default function Footer() {
                     <div>
                         <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-6">Student Council</h4>
                         <div className="space-y-4">
-                            {studentCouncil.slice(0, 3).map((member) => (
+                            {studentCouncil.slice(0, 4).map((member) => (
                                 <div key={member.name}>
-                                    <p className="text-xs text-[#d4a843] uppercase tracking-wide">{member.role}</p>
-                                    <p className="text-sm text-zinc-400">{member.name}</p>
+                                    <p className="text-xs text-zinc-400 uppercase tracking-wide">{member.role}</p>
+                                    <p className="text-sm text-[#d4a843]">{member.name}</p>
                                 </div>
                             ))}
                         </div>

@@ -370,6 +370,7 @@ export const studentCouncil = [
     { role: "Secretary", name: "Veekshi B D", phone: "8971366017" },
     { role: "Cultural Secretary", name: "Murali Krishna", phone: "9113903097" },
     { role: "Sports Secretary", name: "Darshan B R", phone: "9980748518" },
+    { role: "Sports Minister", name: "Keerthi S", phone: "9876543210" },
 ];
 
 // Student Coordinators
