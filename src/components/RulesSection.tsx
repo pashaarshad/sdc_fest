@@ -151,7 +151,7 @@ const rulesData = {
         icon: "⚽",
         events: [
             {
-                name: "DANDASHATAKA - 30 Yards Cricket",
+                name: "DANDASHATAKA (30 YARDS CRICKET)",
                 rules: [
                     "Registration Fees- ₹1000 per team, 8+2 participants in a team.",
                     "Reporting Time for all cricket participants- 8:00 am.",
@@ -220,176 +220,208 @@ export default function RulesSection() {
     const currentData = rulesData[activeCategory];
 
     return (
-        <section id="rules" className="section bg-[#0a0a0c]">
-            <div className="container-main">
+        <section id="rules" className="relative py-24 bg-[#0a0a0c] overflow-hidden">
+            {/* Background Decorative Elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-[#d4a843]/5 rounded-full blur-[100px]" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#d4a843]/5 rounded-full blur-[100px]" />
+            </div>
+
+            <div className="container-main relative z-10">
                 {/* Section Header */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center mb-12"
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="text-center mb-16"
                 >
-                    <p className="section-label">GUIDELINES</p>
-                    <h2 className="section-title">
-                        <span className="text-white">Rules &</span>
-                        <span className="text-gold-gradient ml-3">Regulations</span>
+                    <span className="inline-block py-1 px-3 rounded-full bg-[#d4a843]/10 border border-[#d4a843]/20 text-[#d4a843] text-xs font-bold tracking-widest uppercase mb-4">
+                        Guidelines
+                    </span>
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6">
+                        Rules & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4a843] via-[#f3dba2] to-[#d4a843]">Regulations</span>
                     </h2>
-                    <div className="flex justify-center w-full" style={{ marginBottom: '1%' }}>
-                        <p className="section-subtitle mt-4 text-center max-w-2xl">
-                            Please read all the rules carefully before registering for any event
-                        </p>
-                    </div>
+                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">
+                        Essential guidelines to ensure a fair and spectacular experience for everyone at SHRESHTA 2026.
+                    </p>
 
                     {/* PDF Download Button */}
                     <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        className="mt-6"
+                        className="mt-8"
                     >
                         <a
                             href="/2026 SHRESHTA-Rules And Guidelines.pdf"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-[#d4a843]/10 border border-[#d4a843]/30 rounded-full text-[#d4a843] hover:bg-[#d4a843]/20 transition-all duration-300 group"
+                            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#1c1c20] to-[#25252a] border border-[#d4a843]/30 rounded-full text-white hover:text-[#d4a843] hover:border-[#d4a843] hover:shadow-[0_0_20px_rgba(212,168,67,0.15)] transition-all duration-300 group"
                         >
-                            <Download className="w-5 h-5 group-hover:animate-bounce" />
-                            <span className="font-medium">Download PDF Rules</span>
-                            <FileText className="w-4 h-4" />
+                            <div className="bg-[#d4a843]/20 p-2 rounded-full group-hover:bg-[#d4a843] group-hover:text-black transition-colors duration-300">
+                                <Download className="w-5 h-5" />
+                            </div>
+                            <span className="font-semibold tracking-wide">Download Official PDF</span>
                         </a>
                     </motion.div>
                 </motion.div>
 
-                {/* Category Filter Tabs */}
+                {/* Category Navigation */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.1 }}
-                    className="flex flex-wrap justify-center gap-3 mb-10"
+                    className="flex flex-wrap justify-center gap-4 mb-14"
                 >
                     {categories.map((cat) => (
                         <button
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === cat.id
-                                ? "bg-[#d4a843] text-black shadow-lg shadow-[#d4a843]/30"
-                                : "bg-[#18181c] text-zinc-400 border border-white/10 hover:border-[#d4a843]/50 hover:text-white"
+                            className={`relative px-6 py-3 rounded-2xl text-sm font-semibold tracking-wide transition-all duration-300 flex items-center gap-3 border ${activeCategory === cat.id
+                                ? "bg-[#d4a843] text-black border-[#d4a843] shadow-[0_4px_20px_rgba(212,168,67,0.3)] scale-105"
+                                : "bg-[#141418]/80 backdrop-blur-md text-zinc-400 border-white/5 hover:border-[#d4a843]/50 hover:text-white"
                                 }`}
                         >
-                            <span>{cat.icon}</span>
-                            <span>{cat.label}</span>
+                            <span className="text-lg">{cat.icon}</span>
+                            {cat.label}
                         </button>
                     ))}
                 </motion.div>
 
-                {/* Rules Content */}
-                <motion.div
-                    key={activeCategory}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="max-w-4xl mx-auto"
-                >
-                    {/* Category Header */}
-                    <div className="flex items-center gap-3 mb-6">
-                        <span className="text-3xl">{currentData.icon}</span>
-                        <h3 className="text-2xl font-bold text-white">{currentData.title}</h3>
-                    </div>
+                {/* Content Area */}
+                <div className="min-h-[400px]">
+                    <motion.div
+                        key={activeCategory}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.4 }}
+                        className="max-w-5xl mx-auto"
+                    >
+                        {/* Section Title */}
+                        <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/10">
+                            <span className="text-4xl filter drop-shadow-[0_0_10px_rgba(212,168,67,0.3)]">{currentData.icon}</span>
+                            <h3 className="text-3xl font-serif font-bold text-white">{currentData.title}</h3>
+                        </div>
 
-                    {/* General Rules - Simple List */}
-                    {activeCategory === "general" && "rules" in currentData && (
-                        <div className="bg-[#141418] border border-white/[0.06] rounded-2xl p-6 md:p-8">
-                            <ul className="space-y-4">
+                        {/* General Rules Layout */}
+                        {activeCategory === "general" && "rules" in currentData && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {currentData.rules.map((rule, index) => (
-                                    <motion.li
+                                    <motion.div
                                         key={index}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.3, delay: index * 0.05 }}
-                                        className="flex items-start gap-4"
+                                        className="group relative p-6 rounded-2xl bg-[#18181c] border border-white/5 hover:border-[#d4a843]/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                                     >
-                                        <span className="flex-shrink-0 w-7 h-7 bg-[#d4a843]/10 border border-[#d4a843]/30 rounded-full flex items-center justify-center text-xs font-bold text-[#d4a843]">
+                                        <div className="absolute top-0 right-0 p-4 opacity-10 font-black text-6xl text-white group-hover:text-[#d4a843] transition-colors">
                                             {index + 1}
-                                        </span>
-                                        <p className="text-zinc-300 leading-relaxed">{rule}</p>
-                                    </motion.li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {/* Event-Specific Rules - Accordion */}
-                    {activeCategory !== "general" && "events" in currentData && (
-                        <div className="space-y-4">
-                            {currentData.events.map((event, eventIndex) => (
-                                <motion.div
-                                    key={event.name}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3, delay: eventIndex * 0.1 }}
-                                    className="bg-[#141418] border border-white/[0.06] rounded-2xl overflow-hidden"
-                                >
-                                    {/* Event Header - Clickable */}
-                                    <button
-                                        onClick={() => toggleEvent(event.name)}
-                                        className="w-full flex items-center justify-between p-5 md:p-6 text-left hover:bg-white/[0.02] transition-colors"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <BookOpen className="w-5 h-5 text-[#d4a843]" />
-                                            <span className="text-lg font-semibold text-white">{event.name}</span>
                                         </div>
-                                        {expandedEvents.includes(event.name) ? (
-                                            <ChevronUp className="w-5 h-5 text-zinc-400" />
-                                        ) : (
-                                            <ChevronDown className="w-5 h-5 text-zinc-400" />
-                                        )}
-                                    </button>
+                                        <div className="relative z-10 flex gap-4">
+                                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#d4a843]/10 flex items-center justify-center text-[#d4a843] mt-1 group-hover:bg-[#d4a843] group-hover:text-black transition-colors duration-300">
+                                                <div className="w-2 h-2 bg-current rounded-full" />
+                                            </div>
+                                            <p className="text-zinc-300 leading-relaxed group-hover:text-white transition-colors">
+                                                {rule}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )}
 
-                                    {/* Event Rules - Collapsible */}
-                                    {expandedEvents.includes(event.name) && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="border-t border-white/[0.06] px-5 md:px-6 pb-6"
+                        {/* Event Specific Rules Layout */}
+                        {activeCategory !== "general" && "events" in currentData && (
+                            <div className="grid grid-cols-1 gap-6">
+                                {currentData.events.map((event, eventIndex) => (
+                                    <motion.div
+                                        key={event.name}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, delay: eventIndex * 0.1 }}
+                                        className={`group rounded-2xl border transition-all duration-300 overflow-hidden ${expandedEvents.includes(event.name)
+                                            ? "bg-[#18181c] border-[#d4a843]/30 shadow-[0_0_30px_rgba(0,0,0,0.3)]"
+                                            : "bg-[#141418] border-white/5 hover:border-[#d4a843]/20"
+                                            }`}
+                                    >
+                                        <button
+                                            onClick={() => toggleEvent(event.name)}
+                                            className="w-full flex items-center justify-between p-6 md:p-8 text-left"
                                         >
-                                            <ul className="space-y-3 mt-4">
-                                                {event.rules.map((rule, ruleIndex) => (
-                                                    <li key={ruleIndex} className="flex items-start gap-3">
-                                                        <span className="flex-shrink-0 w-2 h-2 mt-2 bg-[#d4a843] rounded-full" />
-                                                        <p className="text-zinc-400 leading-relaxed">{rule}</p>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </motion.div>
-                                    )}
-                                </motion.div>
-                            ))}
-                        </div>
-                    )}
-                </motion.div>
+                                            <div className="flex items-center gap-6">
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${expandedEvents.includes(event.name) ? "bg-[#d4a843] text-black" : "bg-white/5 text-[#d4a843]"
+                                                    }`}>
+                                                    <BookOpen className="w-6 h-6" />
+                                                </div>
+                                                <div>
+                                                    <h4 className={`text-xl font-bold transition-colors ${expandedEvents.includes(event.name) ? "text-[#d4a843]" : "text-white"
+                                                        }`}>
+                                                        {event.name}
+                                                    </h4>
+                                                    <p className="text-sm text-zinc-500 mt-1">Click to view detailed regulations</p>
+                                                </div>
+                                            </div>
+                                            <div className={`p-2 rounded-full transition-all duration-300 ${expandedEvents.includes(event.name) ? "bg-[#d4a843]/10 rotate-180" : "bg-white/5"
+                                                }`}>
+                                                <ChevronDown className={`w-6 h-6 transition-colors ${expandedEvents.includes(event.name) ? "text-[#d4a843]" : "text-zinc-400"
+                                                    }`} />
+                                            </div>
+                                        </button>
 
-                {/* Important Notice */}
+                                        <motion.div
+                                            initial={false}
+                                            animate={{
+                                                height: expandedEvents.includes(event.name) ? "auto" : 0,
+                                                opacity: expandedEvents.includes(event.name) ? 1 : 0
+                                            }}
+                                            transition={{ duration: 0.3 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="p-6 md:p-8 pt-0 border-t border-white/5">
+                                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                                                    {event.rules.map((rule, ruleIndex) => (
+                                                        <li key={ruleIndex} className="flex items-start gap-3 p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#d4a843]/20 transition-colors">
+                                                            <span className="flex-shrink-0 w-1.5 h-1.5 mt-2.5 bg-[#d4a843] rounded-full shadow-[0_0_8px_#d4a843]" />
+                                                            <span className="text-zinc-300 text-sm leading-relaxed">{rule}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </motion.div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )}
+                    </motion.div>
+                </div>
+
+                {/* Animated Important Notice */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    className="max-w-4xl mx-auto mt-10"
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="max-w-4xl mx-auto mt-20"
                 >
-                    <div className="bg-gradient-to-r from-[#d4a843]/10 to-transparent border border-[#d4a843]/20 rounded-2xl p-6 flex items-start gap-4">
-                        <div className="flex-shrink-0 w-10 h-10 bg-[#d4a843]/20 rounded-full flex items-center justify-center">
-                            <span className="text-xl">⚠️</span>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-semibold mb-2">Important Notice</h4>
-                            <p className="text-zinc-400 text-sm leading-relaxed">
-                                All participants must carry their valid College ID Card and Principal&apos;s Permission Letter during registration.
-                                Violation of any rules will lead to immediate disqualification. The decision of the judges and coordinators will be final.
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#2a1e0b] to-[#1a1400] border border-[#d4a843]/30 p-8 md:p-10 text-center group">
+                        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20" />
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#d4a843] to-transparent opacity-50" />
+
+                        <div className="relative z-10 flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-[#d4a843]/10 flex items-center justify-center mb-6 ring-1 ring-[#d4a843]/50 ring-offset-2 ring-offset-[#1a1400] animate-pulse">
+                                <span className="text-3xl">⚠️</span>
+                            </div>
+                            <h4 className="text-2xl font-serif font-bold text-[#d4a843] mb-4">Important Notice</h4>
+                            <p className="text-zinc-300 text-lg leading-relaxed max-w-2xl">
+                                All participants must carry their valid <span className="text-white font-semibold">College ID Card</span> during registration.
+                                <br />
+                                <span className="text-sm mt-3 block text-zinc-500">
+                                    Violation of any rules will lead to immediate disqualification. The decision of the judges and coordinators will be final.
+                                </span>
                             </p>
                         </div>
                     </div>
