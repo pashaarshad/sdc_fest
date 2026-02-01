@@ -17,7 +17,7 @@ const sponsors = [
 
 const SponsorsSection = () => {
     return (
-        <section className="py-20 bg-[#0a0a0c] overflow-hidden">
+        <section id="sponsors" className="py-20 bg-[#0a0a0c] overflow-hidden">
             <br /><br /><br />
             <div className="container-main px-4">
                 <motion.div

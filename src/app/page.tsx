@@ -5,6 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import EventCard from "@/components/EventCard";
 import ScheduleSection from "@/components/ScheduleSection";
 import SponsorsSection from "@/components/SponsorsSection";
+import RulesSection from "@/components/RulesSection";
 import { itEvents, managementEvents, culturalEvents, sportsEvents, Event, collegeInfo, facultyCoordinators } from "@/data/events";
 import Link from "next/link";
 
@@ -84,6 +85,9 @@ export default function Home() {
 
       {/* Event Schedule Section */}
       <ScheduleSection />
+
+      {/* Rules Section */}
+      <RulesSection />
 
       {/* Sponsors Section */}
       <SponsorsSection />
