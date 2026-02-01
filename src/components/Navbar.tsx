@@ -26,6 +26,34 @@ export default function Navbar() {
         { name: "About", href: "/#about" },
     ];
 
+    const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        // If it's a mobile click, close the menu
+        setIsMobileMenuOpen(false);
+
+        // Only handle hash links on the home page
+        const isHomePage = typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '');
+
+        if (isHomePage && href.includes('#')) {
+            const hash = href.split('#')[1];
+            const element = document.getElementById(hash);
+
+            if (element) {
+                e.preventDefault();
+                const headerOffset = 80;
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+
+                // Update URL without page reload/jump
+                window.history.pushState(null, "", `#${hash}`);
+            }
+        }
+    };
+
     return (
         <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
@@ -36,8 +64,7 @@ export default function Navbar() {
             <nav className="container-main">
                 <div className="flex items-center justify-between h-16 lg:h-20">
                     {/* Logo */}
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-3 group">
+                    <Link href="/" className="flex items-center gap-3 group" onClick={(e) => handleScroll(e, '/')}>
                         <div className="flex items-baseline gap-1">
                             <span className="text-white font-semibold text-lg">SHRESHTA</span>
                             <span className="text-[#d4a843] text-sm font-medium">&apos;26</span>
@@ -50,6 +77,7 @@ export default function Navbar() {
                             <Link
                                 key={link.name}
                                 href={link.href}
+                                onClick={(e) => handleScroll(e, link.href)}
                                 className="text-[15px] text-zinc-400 hover:text-white transition-colors"
                             >
                                 {link.name}
@@ -59,7 +87,11 @@ export default function Navbar() {
 
                     {/* CTA Button */}
                     <div className="hidden lg:block">
-                        <Link href="/#register" className="btn btn-primary">
+                        <Link
+                            href="/#register"
+                            className="btn btn-primary"
+                            onClick={(e) => handleScroll(e, '/#register')}
+                        >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
@@ -90,7 +122,7 @@ export default function Navbar() {
                                 key={link.name}
                                 href={link.href}
                                 className="block py-3 text-zinc-400 hover:text-white transition-colors"
-                                onClick={() => setIsMobileMenuOpen(false)}
+                                onClick={(e) => handleScroll(e, link.href)}
                             >
                                 {link.name}
                             </Link>
@@ -98,7 +130,7 @@ export default function Navbar() {
                         <Link
                             href="/#register"
                             className="btn btn-primary w-full mt-4"
-                            onClick={() => setIsMobileMenuOpen(false)}
+                            onClick={(e) => handleScroll(e, '/#register')}
                         >
                             Register Now
                         </Link>
