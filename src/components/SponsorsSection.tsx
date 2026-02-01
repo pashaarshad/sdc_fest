@@ -5,7 +5,14 @@ import { motion } from "framer-motion";
 const sponsors = [
     { id: 1, image: "/ad1.jpeg", name: "Sponsor 1" },
     { id: 2, image: "/sp2.jfif", name: "Sponsor 2" },
-    { id: 2, image: "/gv_creation.png", name: "Sponsor 3" }
+    { id: 3, image: "/gv_creation.png", name: "GV Creation" },
+    { id: 4, image: "/sp4.jpeg", name: "Sponsor 4" },
+    { id: 5, image: "/sp5.jpeg", name: "Sponsor 5" },
+    { id: 6, image: "/sp6.jpeg", name: "Sponsor 6" },
+    { id: 7, image: "/sp7.jpeg", name: "Sponsor 7" },
+    { id: 8, image: "/sp8.jpeg", name: "Sponsor 8" },
+    { id: 9, image: "/sp9.jpeg", name: "Sponsor 9" },
+    { id: 10, image: "/sp10.jpeg", name: "Sponsor 10" },
 ];
 
 const SponsorsSection = () => {
