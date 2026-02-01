@@ -99,10 +99,15 @@ export default function HeroSection() {
                             <Clock className="w-4 h-4 text-zinc-400" />
                             <span className="text-sm text-zinc-300">8:30 AM onwards</span>
                         </div>
-                        <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#18181c] border border-white/10">
-                            <MapPin className="w-4 h-4 text-zinc-400" />
-                            <span className="text-sm text-zinc-300">Seshadripuram Degree College, Mysuru</span>
-                        </div>
+                        <a
+                            href="https://share.google/Q5XblAy0xnqSQMrk9"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#18181c] border border-white/10 transition-colors hover:border-[#d4a843]/50 hover:bg-[#d4a843]/5 group cursor-pointer"
+                        >
+                            <MapPin className="w-4 h-4 text-zinc-400 group-hover:text-[#d4a843] transition-colors" />
+                            <span className="text-sm text-zinc-300 group-hover:text-white transition-colors">Seshadripuram Degree College, Mysuru</span>
+                        </a>
                     </motion.div>
 
                     {/* Countdown Timer */}
