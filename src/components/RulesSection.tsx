@@ -309,23 +309,23 @@ export default function RulesSection() {
 
                         {/* General Rules Layout */}
                         {activeCategory === "general" && "rules" in currentData && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {currentData.rules.map((rule, index) => (
                                     <motion.div
                                         key={index}
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.3, delay: index * 0.05 }}
-                                        className="group relative p-6 rounded-2xl bg-[#18181c] border border-white/5 hover:border-[#d4a843]/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                                        className="group relative p-8 rounded-2xl bg-[#18181c] border border-white/5 hover:border-[#d4a843]/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
                                     >
-                                        <div className="absolute top-0 right-0 p-4 opacity-10 font-black text-6xl text-white group-hover:text-[#d4a843] transition-colors">
+                                        <div className="absolute top-2 right-4 opacity-[0.03] font-black text-8xl text-white group-hover:text-[#d4a843] transition-colors select-none pointer-events-none">
                                             {index + 1}
                                         </div>
-                                        <div className="relative z-10 flex gap-4">
-                                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#d4a843]/10 flex items-center justify-center text-[#d4a843] mt-1 group-hover:bg-[#d4a843] group-hover:text-black transition-colors duration-300">
-                                                <div className="w-2 h-2 bg-current rounded-full" />
+                                        <div className="relative z-10 flex gap-6 items-start">
+                                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#d4a843]/10 flex items-center justify-center text-[#d4a843] mt-1 group-hover:bg-[#d4a843] group-hover:text-black transition-colors duration-300 shadow-[0_0_15px_rgba(212,168,67,0.1)]">
+                                                <div className="w-2.5 h-2.5 bg-current rounded-full" />
                                             </div>
-                                            <p className="text-zinc-300 leading-relaxed group-hover:text-white transition-colors">
+                                            <p className="text-zinc-300 text-lg leading-relaxed group-hover:text-white transition-colors pt-1">
                                                 {rule}
                                             </p>
                                         </div>
@@ -336,36 +336,36 @@ export default function RulesSection() {
 
                         {/* Event Specific Rules Layout */}
                         {activeCategory !== "general" && "events" in currentData && (
-                            <div className="grid grid-cols-1 gap-6">
+                            <div className="grid grid-cols-1 gap-8">
                                 {currentData.events.map((event, eventIndex) => (
                                     <motion.div
                                         key={event.name}
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.3, delay: eventIndex * 0.1 }}
-                                        className={`group rounded-2xl border transition-all duration-300 overflow-hidden ${expandedEvents.includes(event.name)
-                                            ? "bg-[#18181c] border-[#d4a843]/30 shadow-[0_0_30px_rgba(0,0,0,0.3)]"
+                                        className={`group rounded-3xl border transition-all duration-300 overflow-hidden ${expandedEvents.includes(event.name)
+                                            ? "bg-[#18181c] border-[#d4a843]/30 shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
                                             : "bg-[#141418] border-white/5 hover:border-[#d4a843]/20"
                                             }`}
                                     >
                                         <button
                                             onClick={() => toggleEvent(event.name)}
-                                            className="w-full flex items-center justify-between p-6 md:p-8 text-left"
+                                            className="w-full flex items-center justify-between p-8 md:p-10 text-left"
                                         >
-                                            <div className="flex items-center gap-6">
-                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${expandedEvents.includes(event.name) ? "bg-[#d4a843] text-black" : "bg-white/5 text-[#d4a843]"
+                                            <div className="flex items-center gap-8">
+                                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-lg ${expandedEvents.includes(event.name) ? "bg-[#d4a843] text-black shadow-[#d4a843]/20" : "bg-white/5 text-[#d4a843]"
                                                     }`}>
-                                                    <BookOpen className="w-6 h-6" />
+                                                    <BookOpen className="w-7 h-7" />
                                                 </div>
                                                 <div>
-                                                    <h4 className={`text-xl font-bold transition-colors ${expandedEvents.includes(event.name) ? "text-[#d4a843]" : "text-white"
+                                                    <h4 className={`text-2xl font-bold transition-colors ${expandedEvents.includes(event.name) ? "text-[#d4a843]" : "text-white"
                                                         }`}>
                                                         {event.name}
                                                     </h4>
-                                                    <p className="text-sm text-zinc-500 mt-1">Click to view detailed regulations</p>
+                                                    <p className="text-base text-zinc-500 mt-2 font-medium">Click to view detailed regulations</p>
                                                 </div>
                                             </div>
-                                            <div className={`p-2 rounded-full transition-all duration-300 ${expandedEvents.includes(event.name) ? "bg-[#d4a843]/10 rotate-180" : "bg-white/5"
+                                            <div className={`p-3 rounded-full transition-all duration-300 ${expandedEvents.includes(event.name) ? "bg-[#d4a843]/10 rotate-180" : "bg-white/5"
                                                 }`}>
                                                 <ChevronDown className={`w-6 h-6 transition-colors ${expandedEvents.includes(event.name) ? "text-[#d4a843]" : "text-zinc-400"
                                                     }`} />
@@ -378,18 +378,26 @@ export default function RulesSection() {
                                                 height: expandedEvents.includes(event.name) ? "auto" : 0,
                                                 opacity: expandedEvents.includes(event.name) ? 1 : 0
                                             }}
-                                            transition={{ duration: 0.3 }}
+                                            transition={{ duration: 0.4, ease: "easeInOut" }}
                                             className="overflow-hidden"
                                         >
-                                            <div className="p-6 md:p-8 pt-0 border-t border-white/5">
-                                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                                            <div className="p-8 md:p-10 pt-0 border-t border-white/5 bg-black/20">
+                                                <div className="mt-8 space-y-4">
                                                     {event.rules.map((rule, ruleIndex) => (
-                                                        <li key={ruleIndex} className="flex items-start gap-3 p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#d4a843]/20 transition-colors">
-                                                            <span className="flex-shrink-0 w-1.5 h-1.5 mt-2.5 bg-[#d4a843] rounded-full shadow-[0_0_8px_#d4a843]" />
-                                                            <span className="text-zinc-300 text-sm leading-relaxed">{rule}</span>
-                                                        </li>
+                                                        <motion.div
+                                                            key={ruleIndex}
+                                                            initial={{ opacity: 0, x: -10 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            transition={{ delay: ruleIndex * 0.05 }}
+                                                            className="flex items-start gap-5 p-4 rounded-xl hover:bg-white/[0.02] transition-colors"
+                                                        >
+                                                            <div className="flex-shrink-0 w-6 h-6 mt-1 flex items-center justify-center rounded-full bg-[#d4a843]/20 text-[#d4a843]">
+                                                                <div className="w-2 h-2 bg-[#d4a843] rounded-full shadow-[0_0_8px_#d4a843]" />
+                                                            </div>
+                                                            <span className="text-zinc-300 text-lg leading-relaxed">{rule}</span>
+                                                        </motion.div>
                                                     ))}
-                                                </ul>
+                                                </div>
                                             </div>
                                         </motion.div>
                                     </motion.div>
