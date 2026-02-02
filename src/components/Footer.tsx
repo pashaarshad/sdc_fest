@@ -85,8 +85,18 @@ export default function Footer() {
                     <p className="text-xs text-zinc-300">
                         © {currentYear} <b>SHRESHTA • Seshadripuram Degree College, Mysuru</b>
                     </p>
-                    <br />
 
+                    {/* Visitor Counter */}
+                    <div className="opacity-80 hover:opacity-100 transition-opacity">
+                        <a href="https://www.hitwebcounter.com/" target="_blank" rel="noopener noreferrer">
+                            <img
+                                src="https://hitwebcounter.com/counter/counter.php?page=21473906&style=0009&nbdigits=5&type=ip&initCount=0"
+                                title="Total Views"
+                                alt="Total Views"
+                                style={{ border: 0, filter: 'sepia(100%) hue-rotate(5deg) saturate(400%) contrast(90%)' }}
+                            />
+                        </a>
+                    </div>
                 </div>
 
                 {/* Designer Credit */}
